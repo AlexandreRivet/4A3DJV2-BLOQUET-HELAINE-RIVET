@@ -41,4 +41,8 @@ public class CreateServerScripts : MonoBehaviour {
             Debug.Log("Connection Succeful");
 	    }
     }
+    private void OnPlayerConnected(NetworkPlayer player)
+    {
+        Debug.Log("Nex player");
+    }
 }
