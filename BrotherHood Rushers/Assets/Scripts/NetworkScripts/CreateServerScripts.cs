@@ -5,7 +5,8 @@ using System.Collections;
 public class CreateServerScripts : MonoBehaviour {
 
     public int _maxConnection = 3;
-    
+    public string _levelName = "levelName";
+
     private string _privateName = " Game Name Empty";
     private int _port = 21000;
     
@@ -60,12 +61,13 @@ public class CreateServerScripts : MonoBehaviour {
         Debug.Log("Server initialized");
     }
 
-    //Fonction de debug appelée quand le joueur qui a créé le serveur est connecté
+    //Fonction de debug appelée quand le Master serveur est créé
     public void OnMasterServerEvent(MasterServerEvent mse)
     {
 	    if(mse == MasterServerEvent.RegistrationSucceeded)
 	    {
             Debug.Log("Connection Succeful");
+            Application.LoadLevel(_levelName);
 	    }
     }
 
@@ -77,6 +79,19 @@ public class CreateServerScripts : MonoBehaviour {
         {
             Debug.Log("Trop de connection");
             Network.CloseConnection(player, true);
+        }
+        else
+        {
+            networkView.RPC("ConnectPlayerToGame",RPCMode.Others,player);
+        }
+    }
+
+    [RPC]
+    private void ConnectPlayerToGame(NetworkPlayer player)
+    {
+        if (Network.player.Equals(player))
+        {
+            Application.LoadLevel(_levelName);
         }
     }
 }
