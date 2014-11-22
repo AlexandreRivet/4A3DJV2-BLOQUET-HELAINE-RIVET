@@ -5,7 +5,7 @@ using System.Collections;
 public class CreateServerScripts : MonoBehaviour {
 
     public int _maxConnection = 3;
-    public string _levelName = "levelName";
+    public string _levelName;
 
     private string _privateName = " Game Name Empty";
     private int _port = 21000;
@@ -64,7 +64,7 @@ public class CreateServerScripts : MonoBehaviour {
     //Fonction de debug appelée quand le Master serveur est créé
     public void OnMasterServerEvent(MasterServerEvent mse)
     {
-	    if(mse == MasterServerEvent.RegistrationSucceeded)
+        if (mse == MasterServerEvent.RegistrationSucceeded && !(Application.loadedLevelName.Equals(_levelName)))
 	    {
             Debug.Log("Connection Succeful");
             Application.LoadLevel(_levelName);
