@@ -6,6 +6,9 @@ public class CreateServerScripts : MonoBehaviour {
 
     public int _maxConnection = 3;
     public string _levelName;
+    public GameObject _menuNetwork;
+    public GameObject _menuLobby;
+    public Text[] _lobbyTextArray;
 
     private string _privateName = " Game Name Empty";
     private int _port = 21000;
@@ -67,7 +70,9 @@ public class CreateServerScripts : MonoBehaviour {
         if (mse == MasterServerEvent.RegistrationSucceeded && !(Application.loadedLevelName.Equals(_levelName)))
 	    {
             Debug.Log("Connection Succeful");
-            Application.LoadLevel(_levelName);
+            //Application.LoadLevel(_levelName);
+            _menuLobby.SetActive(true);
+            _menuNetwork.SetActive(false);
 	    }
     }
 
@@ -89,9 +94,11 @@ public class CreateServerScripts : MonoBehaviour {
     [RPC]
     private void ConnectPlayerToGame(NetworkPlayer player)
     {
-        if (Network.player.Equals(player))
+        if (Network.isClient && Network.player.Equals(player))
         {
-            Application.LoadLevel(_levelName);
+            //Application.LoadLevel(_levelName);
+            _menuLobby.SetActive(true);
+            _menuNetwork.SetActive(false);
         }
     }
 }
