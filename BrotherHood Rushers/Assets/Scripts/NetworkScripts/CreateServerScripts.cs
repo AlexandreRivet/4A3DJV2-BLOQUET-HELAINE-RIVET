@@ -9,10 +9,11 @@ public class CreateServerScripts : MonoBehaviour {
     public GameObject _menuNetwork;
     public GameObject _menuLobby;
     public Text[] _lobbyTextArray;
+    public GameObject _buttonStartGame;
 
     private string _privateName = " Game Name Empty";
     private int _port = 21000;
-    
+    private bool _initServer = false;
 
 	// Use this for initialization
 	void Start () {
@@ -67,12 +68,13 @@ public class CreateServerScripts : MonoBehaviour {
     //Fonction de debug appelée quand le Master serveur est créé
     public void OnMasterServerEvent(MasterServerEvent mse)
     {
-        if (mse == MasterServerEvent.RegistrationSucceeded && !(Application.loadedLevelName.Equals(_levelName)))
+        if (mse == MasterServerEvent.RegistrationSucceeded && !_initServer)
 	    {
             Debug.Log("Connection Succeful");
             //Application.LoadLevel(_levelName);
             _menuLobby.SetActive(true);
             _menuNetwork.SetActive(false);
+            _initServer = true;
 	    }
     }
 
@@ -80,25 +82,36 @@ public class CreateServerScripts : MonoBehaviour {
     private void OnPlayerConnected(NetworkPlayer player)
     {
         Debug.Log("New player");
-        if (Network.connections.Length > _maxConnection)
+        if (Network.connections.Length > _maxConnection-1)
         {
             Debug.Log("Trop de connection");
             Network.CloseConnection(player, true);
         }
         else
         {
-            networkView.RPC("ConnectPlayerToGame",RPCMode.Others,player);
+            networkView.RPC("ConnectPlayerToGame", RPCMode.All, player, Network.connections.Length);
+            if(Network.connections.Length == _maxConnection-1)
+            {
+                _buttonStartGame.SetActive(true);
+            }
         }
     }
 
     [RPC]
-    private void ConnectPlayerToGame(NetworkPlayer player)
+    private void ConnectPlayerToGame(NetworkPlayer player, int nbConnection)
     {
         if (Network.isClient && Network.player.Equals(player))
         {
             //Application.LoadLevel(_levelName);
             _menuLobby.SetActive(true);
             _menuNetwork.SetActive(false);
+        }
+        for(int i = 1; i < _lobbyTextArray.Length ; i++)
+        {
+            if (i <= nbConnection)
+                _lobbyTextArray[i].text = "V";
+            else
+                _lobbyTextArray[i].text = "X";
         }
     }
 }
