@@ -5,7 +5,7 @@ using System.Collections;
 public class CreateServerScripts : MonoBehaviour {
 
     public int _maxConnection = 3;
-    public string _levelName;
+    //public string _levelName;
     public GameObject _menuNetwork;
     public GameObject _menuLobby;
     public Text[] _lobbyTextArray;
@@ -95,6 +95,17 @@ public class CreateServerScripts : MonoBehaviour {
                 _buttonStartGame.SetActive(true);
             }
         }
+    }
+
+    public void ClickToStart(string levelName)
+    {
+        networkView.RPC("ClickToStartRPC", RPCMode.All, levelName);
+    }
+
+    [RPC]
+    private void ClickToStartRPC(string levelName)
+    {
+        Application.LoadLevel(levelName);
     }
 
     [RPC]
