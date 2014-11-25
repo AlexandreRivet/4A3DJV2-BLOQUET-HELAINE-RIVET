@@ -11,6 +11,9 @@ public class SelectCharacterScript : MonoBehaviour {
     public Color _ColorOthersButtonLock;
 
     public Button[] _buttonsArray;
+    public GameObject _buttonStartGame;
+
+    private int _nbCharacterLocked = 0; 
 
     public void selectMyButton(int index)
     {
@@ -28,6 +31,14 @@ public class SelectCharacterScript : MonoBehaviour {
     [RPC]
     public void setColorButton(int index, int player)
     {
+        if (Network.isServer)
+        {
+            _nbCharacterLocked++;
+            if (_nbCharacterLocked == _buttonsArray.Length)
+                _buttonStartGame.SetActive(true);
+        }
+           
+        
         if (player == 0)
             _buttonsArray[index].image.color = _ColorMyButtonLock;
         else

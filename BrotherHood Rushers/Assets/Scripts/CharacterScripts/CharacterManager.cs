@@ -5,8 +5,6 @@ public class CharacterManager : MonoBehaviour {
 
 
     public GameObject[] _charactersArray;
-    public Material[] _charactersColorArray;
-
     public GameObject[] getCharactersArray()
     {
         return _charactersArray;
@@ -15,17 +13,14 @@ public class CharacterManager : MonoBehaviour {
     {
         return _charactersArray[index];
     }
-    public Material[] getCharactersMaterialArray()
-    {
-        return _charactersColorArray;
-    }
+    
     public Material getCharactersMaterialByIndex(int index)
     {
-        return _charactersColorArray[index];
+        return _charactersArray[index].renderer.material;
     }
     public void setMainColorByIndex(int index,  Color color)
     {
-        _charactersColorArray[index].color = color;
+        _charactersArray[index].renderer.material.color = color;
     }
 
 }

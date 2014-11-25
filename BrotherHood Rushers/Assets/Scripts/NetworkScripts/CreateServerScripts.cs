@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CreateServerScripts : MonoBehaviour {
 
@@ -14,10 +15,10 @@ public class CreateServerScripts : MonoBehaviour {
     private string _privateName = " Game Name Empty";
     private int _port = 21000;
     private bool _initServer = false;
-
+    private List<NetworkPlayer> playersArray = new List<NetworkPlayer>();
 	// Use this for initialization
 	void Start () {
-	
+       
 	}
 	
 	// Update is called once per frame
@@ -55,7 +56,7 @@ public class CreateServerScripts : MonoBehaviour {
     public void StartServer()
     {
         //Network.InitializeSecurity(); //Permet de protéger son jeu des tricheurs :D
-        Network.InitializeServer(32, _port, !Network.HavePublicAddress());
+        Network.InitializeServer(_maxConnection, _port, !Network.HavePublicAddress());
         MasterServer.RegisterHost("BHR", _privateName, "Welcome to Brotherhood Runners");
     }
 
@@ -82,21 +83,36 @@ public class CreateServerScripts : MonoBehaviour {
     private void OnPlayerConnected(NetworkPlayer player)
     {
         Debug.Log("New player");
-        if (Network.connections.Length > _maxConnection-1)
+        playersArray.Add(player);
+        /*if (Network.connections.Length > _maxConnection-1)
         {
             Debug.Log("Trop de connection");
             Network.CloseConnection(player, true);
-        }
-        else
+        }*/
+        //else
         {
-            networkView.RPC("ConnectPlayerToGame", RPCMode.All, player, Network.connections.Length);
-            if(Network.connections.Length == _maxConnection-1)
+            networkView.RPC("ConnectPlayerToGameRPC", RPCMode.All, player, playersArray.Count);
+            if (playersArray.Count == _maxConnection - 1)
             {
                 _buttonStartGame.SetActive(true);
             }
         }
     }
 
+    //Fonction de debug appelée quand un nouveau joueur se deconnecte
+    private void OnPlayerDisconnected(NetworkPlayer player)
+    {
+        Debug.Log("Disconnected player");
+        Debug.Log("Clean up after player " + player);
+        Network.RemoveRPCs(player);
+        Network.DestroyPlayerObjects(player);
+        playersArray.Remove(player);
+        networkView.RPC("DisconnectPlayerToGameRPC", RPCMode.All, playersArray.Count);
+        if (playersArray.Count < _maxConnection - 1)
+        {
+            _buttonStartGame.SetActive(false);
+        }
+    }
     public void ClickToStart(string levelName)
     {
         networkView.RPC("ClickToStartRPC", RPCMode.All, levelName);
@@ -109,7 +125,7 @@ public class CreateServerScripts : MonoBehaviour {
     }
 
     [RPC]
-    private void ConnectPlayerToGame(NetworkPlayer player, int nbConnection)
+    private void ConnectPlayerToGameRPC(NetworkPlayer player, int nbConnection)
     {
         if (Network.isClient && Network.player.Equals(player))
         {
@@ -118,6 +134,18 @@ public class CreateServerScripts : MonoBehaviour {
             _menuNetwork.SetActive(false);
         }
         for(int i = 1; i < _lobbyTextArray.Length ; i++)
+        {
+            if (i <= nbConnection)
+                _lobbyTextArray[i].text = "V";
+            else
+                _lobbyTextArray[i].text = "X";
+        }
+    }
+
+    [RPC]
+    private void DisconnectPlayerToGameRPC(int nbConnection)
+    {
+        for (int i = 1; i < _lobbyTextArray.Length; i++)
         {
             if (i <= nbConnection)
                 _lobbyTextArray[i].text = "V";
