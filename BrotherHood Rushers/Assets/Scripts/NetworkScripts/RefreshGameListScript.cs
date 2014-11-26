@@ -10,7 +10,6 @@ public class RefreshGameListScript : MonoBehaviour {
 
     private GameObject[] _buttonListToConnect;
     private HostData[] _hostData = new HostData[0];
-    private bool _refresh = false;
     private int _indexGameToConnect = 0;
 
 	// Use this for initialization
@@ -21,20 +20,13 @@ public class RefreshGameListScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
     {
-        //S'il existe des parties en cours et si le joueur a demandé à refresh la liste des parties.
-        if (MasterServer.PollHostList().Length > 0 && _refresh)
-        {
-            _hostData = MasterServer.PollHostList();
-            addButtonGameList();
-            _refresh = false;
-        }
+       
 	}
 
     // Resfresh la liste des parties en cours
     public void refreshHostList()
     {
         MasterServer.RequestHostList("BHR");
-        _refresh = true;
     }
 
     //Ajoute, positionne les boutons de la liste des parties en cours. Permettant ainsi de se connecter à une partie
@@ -79,5 +71,15 @@ public class RefreshGameListScript : MonoBehaviour {
     public void connectAtGame(int i)
     {
         Network.Connect(_hostData[i]);
+    }
+
+    public void OnMasterServerEvent(MasterServerEvent mse)
+    {
+        //Received a host list from the master server
+        if (mse == MasterServerEvent.HostListReceived)
+        {
+            _hostData = MasterServer.PollHostList();
+            addButtonGameList();
+        }
     }
 }
