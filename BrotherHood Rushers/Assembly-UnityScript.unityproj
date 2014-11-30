@@ -5,11 +5,11 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{F1B74046-48BF-32AC-ED88-F2223B65CB17}</ProjectGuid>
+	<ProjectGuid>{D31CE69E-0A94-1FF7-454C-7BC2FB391F9A}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
-	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<AssemblyName>Assembly-UnityScript</AssemblyName>
 	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<BaseDirectory>Assets</BaseDirectory>
@@ -46,14 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\CharacterScripts\CharacterManager.cs" />
-     <Compile Include="Assets\Scripts\Format_ResolutionScript\AdjustPositionAlongRatioScript.cs" />
-     <Compile Include="Assets\Scripts\Format_ResolutionScript\TestAdjustResolution.cs" />
-     <Compile Include="Assets\Scripts\MenuScripts\OnClickObjectMenuScript.cs" />
-     <Compile Include="Assets\Scripts\MenuScripts\SelectCharacterScript.cs" />
-     <Compile Include="Assets\Scripts\NetworkScripts\CreateServerScripts.cs" />
-     <Compile Include="Assets\Scripts\NetworkScripts\RefreshGameListScript.cs" />
-     <Compile Include="Assets\Scripts\NetworkScripts\SecurityConnectionServerScript.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\OnClickObjectMenuScript.js" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity4_6/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
  </Reference>
