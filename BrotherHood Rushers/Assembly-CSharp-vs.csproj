@@ -49,6 +49,10 @@
      <Compile Include="Assets\Scripts\CharacterScripts\CharacterManager.cs" />
      <Compile Include="Assets\Scripts\Format_ResolutionScript\AdjustPositionAlongRatioScript.cs" />
      <Compile Include="Assets\Scripts\Format_ResolutionScript\TestAdjustResolution.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\Action.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\GameManagerScript.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\PileActions.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\actionOnClickScript.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\OnClickObjectMenuScript.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\SelectCharacterScript.cs" />
      <Compile Include="Assets\Scripts\NetworkScripts\CreateServerScripts.cs" />

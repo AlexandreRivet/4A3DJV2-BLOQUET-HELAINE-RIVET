@@ -5,7 +5,6 @@ public class OnClickObjectMenuScript : MonoBehaviour {
 
     public GameObject _objectPanelActive;
     public GameObject _objectMenuActive;
-  
     // Use this for initialization
 	void Start () {
 	
