@@ -11,7 +11,7 @@ using System.Collections;
 public class GameManagerScript : MonoBehaviour {
 
 
-
+    [SerializeField]
     private int _idPlayerActif;
     private GameObject _gameObjectPlayerActif;
     private PileActions _pileActionPlayer1;

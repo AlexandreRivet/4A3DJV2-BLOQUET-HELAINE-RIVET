@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: a44ac263e4aea7c48a629b84667de3e3
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - _gameManager: {instanceID: 0}
+  - _characterManager: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
