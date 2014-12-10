@@ -1,0 +1,17 @@
+﻿Pour Maxime:
+TODO List:
+On Click Object Action Script :
+	- Détecter la personne qui clique et voir quels boutons ( actions ) afficher, ajouter un tableau de bouton 
+		au script.
+	- Finir de rajouter ce script à tous les objets et préparer leur Menu
+	- Gérer la désactivation du script quand un menu est ouvert ( priorité des layers )	
+Click On Player Script:
+	- Ajouter au GameManager ou au slider le fait que c'est lui qui ets actif selon le player sélectionné
+	- Au début de la partie, sélectionner le character choisit par le player
+
+Action On CLick Script:
+	-Ajouter le script aux boutons, en spécifiant l'actionName comme étant le nom de la fonction
+	de l'action qui se définie dans le gameManager lors de la lecture du tableau d'actions avec "Invoke"
+Others:
+	- Revoir peut etre la structure entre le gameManager et le characterManager
+	- Commenter et purifier le code
