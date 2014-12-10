@@ -13,6 +13,7 @@ public class GameManagerScript : MonoBehaviour {
 
     [SerializeField]
     private int _idPlayerActif;
+    private bool _menuInteractObjectActif = false;
     private GameObject _gameObjectPlayerActif;
     private PileActions _pileActionPlayer1;
 	private PileActions _pileActionPlayer2;
@@ -37,6 +38,14 @@ public class GameManagerScript : MonoBehaviour {
     public int getIdPlayerActif()
     {
        return  _idPlayerActif;
+    }
+    public void setMenuInteractObjectActif(bool value)
+    {
+        _menuInteractObjectActif = value;
+    }
+    public bool getMenuInteractObjectActif()
+    {
+        return _menuInteractObjectActif;
     }
     public void setPlayerActif(GameObject player)
     {
