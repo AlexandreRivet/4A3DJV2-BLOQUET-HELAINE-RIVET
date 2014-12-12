@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class SlidersManagerScript : MonoBehaviour {
 
@@ -27,6 +29,9 @@ public class SlidersManagerScript : MonoBehaviour {
 
     [SerializeField]
     Button _markerModel;
+
+    [SerializeField]
+    List<Button>[] _markersArray = new List<Button>[3];
 
     float[] lastIndex = new float[] { 0, 0, 0 };
 
@@ -69,7 +74,7 @@ public class SlidersManagerScript : MonoBehaviour {
         // Ajouter d'autres traitements ?
     }
 
-    void createMarker(int index, float position)
+    public void createMarker(int index, float position)
     {
         // Création du button
         Button but = (Button)Instantiate(_markerModel);
@@ -83,7 +88,7 @@ public class SlidersManagerScript : MonoBehaviour {
         rect_transform.anchoredPosition3D = new Vector3(0, 0, 0);
         rect_transform.anchoredPosition = new Vector2(position * (1 / _scaleFactor), -(index * _offsetYSliders));
         //TODO: petit problème de décalage dans les button trouver pourquoi mm si ça doit être lié au slider
-
+        //_markersArray[index].Add(but);
         // Mise à jour du prochain ID
         lastIndex[index]++;
     }

@@ -13,6 +13,7 @@ Action On CLick Script:
 	-Ajouter le script aux boutons, en spécifiant l'actionName comme étant le nom de la fonction
 	de l'action qui se définie dans le gameManager lors de la lecture du tableau d'actions avec "Invoke"
 Others:
+	- Lire le tableau d'action et faire la simultation ( que ça soit la fake ou la vrai )
 	- Revoir peut etre la structure entre le gameManager et le characterManager
 	- Mettre les variables en privates, faire setter getter et serializer
 	- Commenter et purifier le code

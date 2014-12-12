@@ -27,18 +27,17 @@ public class SliderScript : MonoBehaviour {
 
     public void onDrag()
     {
-        _slider.value = _oldValue;
+        //_slider.value = _oldValue;
     }
 
     public void onClick()
     {
-        StopAllCoroutines();
+        //StopAllCoroutines();
         _oldValue = _slider.value;
-        _handleSlideArea.SetActive(true);
-        StartCoroutine(test());
+        //_handleSlideArea.SetActive(true);
+        //StartCoroutine(test());
         
     }
-
     IEnumerator test()
     {
         while (true)
