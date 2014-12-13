@@ -20,16 +20,18 @@ public class OnClickPlayerScript : MonoBehaviour {
     void OnMouseDown()
     {
         GameObject[] arrayCharacter = _characterManager.getCharactersArray();
+        GameObject[] arrayCharacterPosition = _characterManager.getCharactersPositionsArray();
         GameObject currentCharacter;
+        GameObject currentCharacterPosition;
         for (int i = 0; i < arrayCharacter.Length; i++ )
         {
             currentCharacter = arrayCharacter[i];
-   
+            currentCharacterPosition = arrayCharacterPosition[i];
             if(currentCharacter.Equals(gameObject))
             {
                 currentCharacter.renderer.material.color = _ColorMyButtonLock;
                 _gameManager.setIdPlayerActif(_idPlayer);
-                _gameManager.setPlayerActif(gameObject);
+                _gameManager.setPlayerActif(currentCharacterPosition);
             }
             else
                 currentCharacter.renderer.material.color = _ColorMyButtonDeLock;

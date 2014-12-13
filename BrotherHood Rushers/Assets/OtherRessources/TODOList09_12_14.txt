@@ -1,19 +1,12 @@
-﻿Pour Maxime:
+﻿
 TODO List:
-On Click Object Action Script :
-	- Détecter la personne qui clique et voir quels boutons ( actions ) afficher, ajouter un tableau de bouton 
-		au script. => Pret voir si réellement besoin
-	- Finir de rajouter ce script à tous les objets et préparer leur Menu => Fait
-	- Gérer la désactivation du script quand un menu est ouvert ( priorité des layers ) => Fait	
-Click On Player Script:
-	- Ajouter au GameManager ou au slider le fait que c'est lui qui ets actif selon le player sélectionné
-	- Au début de la partie, sélectionner le character choisit par le player
 
-Action On CLick Script:
-	-Ajouter le script aux boutons, en spécifiant l'actionName comme étant le nom de la fonction
-	de l'action qui se définie dans le gameManager lors de la lecture du tableau d'actions avec "Invoke"
-Others:
-	- Lire le tableau d'action et faire la simultation ( que ça soit la fake ou la vrai )
+	-Mettre en place les collider etc qui peuvent stoper une action
+	- Relier le lvlgame au llvlconnection
+	- Créer les fonctions d'actions manquantes(jump etc...)
+	- Faire en sorte que le personnage choisit au menu soit bien le siens et que la game puisse commencer
 	- Revoir peut etre la structure entre le gameManager et le characterManager
 	- Mettre les variables en privates, faire setter getter et serializer
 	- Commenter et purifier le code
+	- Mettre en place les sécuité des actions( range max etc..)
+	- Renommer certaines variables avec le bon nom comme  Range Max Action qui est maintenant une vector 3 quui contient ce qu'on veut

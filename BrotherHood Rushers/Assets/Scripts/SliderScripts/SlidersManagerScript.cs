@@ -7,6 +7,9 @@ using System.Linq;
 public class SlidersManagerScript : MonoBehaviour {
 
     [SerializeField]
+    GameManagerScript _gameManager;
+    
+    [SerializeField]
     Slider[] _sliders;
 
     [SerializeField]
@@ -30,8 +33,8 @@ public class SlidersManagerScript : MonoBehaviour {
     [SerializeField]
     Button _markerModel;
 
-    [SerializeField]
-    List<Button>[] _markersArray = new List<Button>[3];
+    /*[SerializeField]
+    List<Button>[] _markersArray = new List<Button>[3];*/
 
     float[] lastIndex = new float[] { 0, 0, 0 };
 
@@ -67,7 +70,18 @@ public class SlidersManagerScript : MonoBehaviour {
         // Calcul de la position dans la scène
         float value = _sliders[index].value;
         float position = value * (_xLevelEnd - _xLevelStart) + _xLevelStart;
-
+        switch (index)
+        {
+            case 0:
+                _gameManager.addActionPlayer1(new Action(_gameManager.getPlayerActif(), new Vector3(position,0,0), null, null, "Move"));
+                break;
+            case 1:
+                _gameManager.addActionPlayer2(new Action(_gameManager.getPlayerActif(), new Vector3(position, 0, 0), null , null, "Move"));
+                break;
+            case 2:
+                _gameManager.addActionPlayer3(new Action(_gameManager.getPlayerActif(), new Vector3(position, 0, 0), null, null, "Move"));
+                break;
+        }
         // Création du marker
         createMarker(index, position);
 
@@ -89,6 +103,7 @@ public class SlidersManagerScript : MonoBehaviour {
         rect_transform.anchoredPosition = new Vector2(position * (1 / _scaleFactor), -(index * _offsetYSliders));
         //TODO: petit problème de décalage dans les button trouver pourquoi mm si ça doit être lié au slider
         //_markersArray[index].Add(but);
+       
         // Mise à jour du prochain ID
         lastIndex[index]++;
     }
