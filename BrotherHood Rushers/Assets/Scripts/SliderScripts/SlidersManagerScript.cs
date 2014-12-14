@@ -8,7 +8,10 @@ public class SlidersManagerScript : MonoBehaviour {
 
     [SerializeField]
     GameManagerScript _gameManager;
-    
+
+    [SerializeField]
+    CharacterManager _characterManager;
+
     [SerializeField]
     Slider[] _sliders;
 
@@ -70,16 +73,17 @@ public class SlidersManagerScript : MonoBehaviour {
         // Calcul de la position dans la scène
         float value = _sliders[index].value;
         float position = value * (_xLevelEnd - _xLevelStart) + _xLevelStart;
+        //TODO: faire un tableau de liste d'actions
         switch (index)
         {
             case 0:
-                _gameManager.addActionPlayer1(new Action(_gameManager.getPlayerActif(), new Vector3(position,0,0), null, null, "Move"));
+                _gameManager.addActionPlayer1(new Action(_characterManager.getCharactersPositionByIndex(0), new Vector3(position, 0, 0), null, null, null, "Move"));
                 break;
             case 1:
-                _gameManager.addActionPlayer2(new Action(_gameManager.getPlayerActif(), new Vector3(position, 0, 0), null , null, "Move"));
+                _gameManager.addActionPlayer2(new Action(_characterManager.getCharactersPositionByIndex(1), new Vector3(position, 0, 0), null, null, null, "Move"));
                 break;
             case 2:
-                _gameManager.addActionPlayer3(new Action(_gameManager.getPlayerActif(), new Vector3(position, 0, 0), null, null, "Move"));
+                _gameManager.addActionPlayer3(new Action(_characterManager.getCharactersPositionByIndex(2), new Vector3(position, 0, 0), null, null, null, "Move"));
                 break;
         }
         // Création du marker

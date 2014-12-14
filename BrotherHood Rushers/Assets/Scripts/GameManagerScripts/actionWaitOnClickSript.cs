@@ -28,19 +28,21 @@ public class actionWaitOnClickSript : MonoBehaviour {
     public void onClick()
     {
         //TODO:Securité pour le parse
+        if (_gameManager.getPlayerActif() == null)
+            return;
         switch (_gameManager.getIdPlayerActif())
         {
             case 0:
-                _gameManager.addActionPlayer1(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>(){float.Parse(_otherValues.text) }, _target, "Wait"));
+                _gameManager.addActionPlayer1(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>(){float.Parse(_otherValues.text) }, _target,null, "Wait"));
                 _sliderManager.createMarker(0, _gameManager.getPlayerActif().transform.position.x);
                 break;
             case 1:
                
-                _gameManager.addActionPlayer2(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, _target, "Wait"));
+                _gameManager.addActionPlayer2(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, _target,null, "Wait"));
                 _sliderManager.createMarker(1, _gameManager.getPlayerActif().transform.position.x);
                 break;
             case 2:
-                _gameManager.addActionPlayer3(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, _target, "Wait"));
+                _gameManager.addActionPlayer3(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, _target,null, "Wait"));
                 _sliderManager.createMarker(2, _gameManager.getPlayerActif().transform.position.x);
                 break;
         }

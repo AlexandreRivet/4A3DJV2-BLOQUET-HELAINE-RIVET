@@ -39,16 +39,25 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity4_6/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity4_6/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CharacterScripts\CharacterManager.cs" />
+     <Compile Include="Assets\Scripts\CharacterScripts\StartActionsScript.cs" />
      <Compile Include="Assets\Scripts\Format_ResolutionScript\AdjustPositionAlongRatioScript.cs" />
      <Compile Include="Assets\Scripts\Format_ResolutionScript\TestAdjustResolution.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\Action.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\GameManagerScript.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\OnClickPlayerScript.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\OnContactObjectScript.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\PileActions.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\actionOnClickScript.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\actionWaitOnClickSript.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\MenuInteractionScript.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\OnClickObjectMenuScript.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\SelectCharacterScript.cs" />
      <Compile Include="Assets\Scripts\NetworkScripts\CreateServerScripts.cs" />
@@ -56,8 +65,9 @@
      <Compile Include="Assets\Scripts\NetworkScripts\SecurityConnectionServerScript.cs" />
      <Compile Include="Assets\Scripts\SliderScripts\SliderScript.cs" />
      <Compile Include="Assets\Scripts\SliderScripts\SlidersManagerScript.cs" />
+     <None Include="Assets\OtherRessources\TODOList09_12_14.txt" />
  <Reference Include="UnityEngine.UI">
- <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files (x86)/Unity4_6/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

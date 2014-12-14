@@ -17,18 +17,21 @@ public class Action {
     private List<float> _otherInformations;
 	//GameObject sur lequel l'action est effectuer
     private GameObject _target;
+
+    private GameObject[] _otherGameObjects;
 	//Type de l'action effectuer
 	private string _typeAction;
 
     private int _actionState;
 
 	//initialize
-    public Action(GameObject character, Vector3 range, List<float> otherValues,GameObject target, string typeAction)
+    public Action(GameObject character, Vector3 range, List<float> otherValues,GameObject target, GameObject[] otherGameObjects, string typeAction)
     {
         this._character = character;
         this._rangeActionMax = range;
         this._otherInformations = otherValues;
         this._target = target;
+        this._otherGameObjects = otherGameObjects;
 		this._typeAction = typeAction;
         this._actionState = 0;
 	}
@@ -52,6 +55,14 @@ public class Action {
     public Vector3 getRangeMax()
     {
         return this._rangeActionMax;
+    }
+    public GameObject[] getOtherGameObject()
+    {
+        return this._otherGameObjects;
+    }
+    public GameObject getOtherGameObjectById(int id)
+    {
+        return this._otherGameObjects[id];
     }
 	public float get_positionTarget(){
         return this._target.transform.position.x;
