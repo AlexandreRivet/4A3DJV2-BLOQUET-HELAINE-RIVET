@@ -7,66 +7,52 @@ using System.Linq;
 //Last modification : 03/12/2014
 //Descrition:
 //Note:
-
+[System.Serializable]
 public class Action {
 	//Position de l'action
-	private GameObject _character;
+    private int _idCharacter;
 	//Rayon dans lequel doit ce trouver le joueur pour effectuer l'action
-	private Vector3 _rangeActionMax;
+	//private Vector3 _rangeActionMax;
 
     private List<float> _otherInformations;
 	//GameObject sur lequel l'action est effectuer
-    private GameObject _target;
+    private int _idTarget;
 
-    private GameObject[] _otherGameObjects;
+    private int[] _sceneIdGameObjects;
 	//Type de l'action effectuer
 	private string _typeAction;
 
     private int _actionState;
 
 	//initialize
-    public Action(GameObject character, Vector3 range, List<float> otherValues,GameObject target, GameObject[] otherGameObjects, string typeAction)
+    public Action(int idCharacter, List<float> otherValues, int idTarget, int[] sceneIdGameObjects, string typeAction)
     {
-        this._character = character;
-        this._rangeActionMax = range;
+        this._idCharacter = idCharacter;
         this._otherInformations = otherValues;
-        this._target = target;
-        this._otherGameObjects = otherGameObjects;
+        this._idTarget = idTarget;
+        this._sceneIdGameObjects = sceneIdGameObjects;
 		this._typeAction = typeAction;
         this._actionState = 0;
 	}
   
 	//getter & setter
-    public GameObject getCharacter()
+   
+    public int getIdCharacter()
     {
-        return this._character;
+        return this._idCharacter;
     }
-    public GameObject getTarget()
+    public int getIdTarget()
     {
-        return this._target;
+        return this._idTarget;
     }
-	public float get_position(){
-        return this._character.transform.position.x;
-	}
     public float get_informationById(int i)
     {
         return this._otherInformations[i];
 	}
-    public Vector3 getRangeMax()
+   /* public Vector3 getRangeMax()
     {
         return this._rangeActionMax;
-    }
-    public GameObject[] getOtherGameObject()
-    {
-        return this._otherGameObjects;
-    }
-    public GameObject getOtherGameObjectById(int id)
-    {
-        return this._otherGameObjects[id];
-    }
-	public float get_positionTarget(){
-        return this._target.transform.position.x;
-	}
+    }*/
 	public string get_typeAction(){
 		return this._typeAction;
 	}
@@ -74,20 +60,14 @@ public class Action {
     {
         return this._actionState;
     }
-	public void set_character(GameObject character){
-        this._character = character;
-	}
     public void set_information(float value)
     {
         this._otherInformations.Add(value);
 	}
-    public void setRangeMax(Vector3 range)
+    /*public void setRangeMax(Vector3 range)
     {
         this._rangeActionMax = range;
-    }
-	public void set_Object(GameObject target){
-        this._target = target;
-	}
+    }*/
 	public void set_typeAction(string typeAction){
 		this._typeAction = typeAction;
 	}
@@ -95,5 +75,12 @@ public class Action {
     {
         this._actionState = state;
     }
-
+    public int get_sceneIdObject(int id)
+    {
+        return this._sceneIdGameObjects[id]; 
+    }
+    public int[] get_allSceneIdObject()
+    {
+        return this._sceneIdGameObjects;
+    }
 }

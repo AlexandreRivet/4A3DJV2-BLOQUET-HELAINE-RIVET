@@ -8,7 +8,7 @@ using System.Linq;
 //Last modification : 03/12/2014
 //Descrition:
 //Note:
-
+[System.Serializable]
 public class PileActions {
 
 	private List<Action> _pileActionPlayer;

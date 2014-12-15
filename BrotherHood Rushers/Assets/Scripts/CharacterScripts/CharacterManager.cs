@@ -6,6 +6,7 @@ public class CharacterManager : MonoBehaviour {
 
     public GameObject[] _charactersArray;
     public GameObject[] _charactersArrayPosition;
+    public GameObject[] _objectsLevel;
     public GameObject[] getCharactersArray()
     {
         return _charactersArray;
@@ -30,5 +31,15 @@ public class CharacterManager : MonoBehaviour {
     {
         _charactersArray[index].renderer.material.color = color;
     }
-
+    public GameObject getObjectLevelById(int id)
+    {
+        return _objectsLevel[id];
+    }
+    public GameObject[] getObjectLevelArrayById(int[] id)
+    {
+        GameObject[] objectLevel = new GameObject[id.Length];
+        for (int i = 0; i < id.Length; i++)
+            objectLevel[i] = _objectsLevel[id[i]];
+        return objectLevel;
+    }
 }

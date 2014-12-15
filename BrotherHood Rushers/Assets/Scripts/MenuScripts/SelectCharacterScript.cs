@@ -6,10 +6,11 @@ public class SelectCharacterScript : MonoBehaviour {
 
     public GameObject _characterUsed;
     public CharacterManager _characterManager;
-    
+    public GameManagerScript _gameManager;
     public Color _ColorMyButtonLock;
     public Color _ColorOthersButtonLock;
 
+    public GameObject _panelSelectCharacter;
     public Button[] _buttonsArray;
     public GameObject _buttonStartGame;
 
@@ -21,13 +22,26 @@ public class SelectCharacterScript : MonoBehaviour {
         networkView.RPC("setColorButton", RPCMode.Others, index, 1);
 
         setButtonUninteractable(new int[] { 0, 1, 2 });
-        networkView.RPC("setButtonUninteractable", RPCMode.Others, new int[]{index});
+        networkView.RPC("setButtonUninteractable", RPCMode.Others, new int[] { index });
 
-        _characterUsed = _characterManager.getCharactersByIndex(index);
-        _characterManager.setMainColorByIndex(index, _ColorMyButtonLock);
+        GameObject currentCharacter = _characterManager.getCharactersByIndex(index);
+        currentCharacter.renderer.material.color = _ColorMyButtonLock;
+
+        GameObject currentCharacterPosition = _characterManager.getCharactersPositionByIndex(index);
+        _gameManager.setIdMyCharacter(index);
+        _gameManager.setIdPlayerActif(index);
+        _gameManager.setPlayerActif(currentCharacterPosition);
+
     }
-
-
+    
+    [RPC]
+    public void sendReadyToPlay()
+    {
+        if(Network.isServer)
+            networkView.RPC("sendReadyToPlay", RPCMode.Others);
+        _panelSelectCharacter.SetActive(false);
+    }
+    
     [RPC]
     public void setColorButton(int index, int player)
     {

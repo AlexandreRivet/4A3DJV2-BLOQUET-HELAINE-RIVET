@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 //Author: Bloquet Pierre
 //Date :28/11/2014
@@ -12,35 +14,50 @@ public class GameManagerScript : MonoBehaviour {
 
 
     [SerializeField]
+    private int _idMyCharacter;
+    
+    [SerializeField]
     private int _idPlayerActif;
     private bool _menuInteractObjectActif = false;
+
+    [SerializeField]
+    private CharacterManager _characterManager;
     [SerializeField]
     private GameObject _gameObjectPlayerActif;
-    private PileActions _pileActionPlayer1;
-	private PileActions _pileActionPlayer2;
-	private PileActions _pileActionPlayer3;
+    
+    private PileActions[] _pileActionPlayers = new PileActions[3];
+    //private PileActions[] _pileActionPlayer2;
+	//private PileActions _pileActionPlayer3;
     private bool _startFakeSimulation = false;
     
     private float[] waitBeforeOtherAction = new float[]{0.0f,0.0f,0.0f};
     private bool[] firstTimeCallAction = new bool[] { true, true, true };
 	// Use this for initialization
 	void Start () {
-		_pileActionPlayer1 = new PileActions();
-        _pileActionPlayer2 = new PileActions();
-        _pileActionPlayer3 = new PileActions();
+        _pileActionPlayers[0] = new PileActions();
+        _pileActionPlayers[1] = new PileActions();
+        _pileActionPlayers[2] = new PileActions();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (!_startFakeSimulation)
             return;
-      
-        readPileAction(_pileActionPlayer1,0);
-        readPileAction(_pileActionPlayer2,1);
-        readPileAction(_pileActionPlayer3,2);
+       
+        readPileAction(_pileActionPlayers[0], 0);
+        readPileAction(_pileActionPlayers[1], 1);
+        readPileAction(_pileActionPlayers[2], 2);
         
 	}
 
+    public void setIdMyCharacter(int id)
+    {
+        _idMyCharacter = id;
+    }
+    public int getIdMyCharacter()
+    {
+        return _idMyCharacter;
+    }
     public void setIdPlayerActif(int id)
     {
         _idPlayerActif = id;
@@ -65,18 +82,18 @@ public class GameManagerScript : MonoBehaviour {
     {
         return _gameObjectPlayerActif;
     }
-    public void addActionPlayer1(Action action)
+    public void addActionPlayers(int id,Action action)
     {
-        _pileActionPlayer1.addActionPlayer(action);
+        _pileActionPlayers[id].addActionPlayer(action);
     }
-    public void addActionPlayer2(Action action)
+    /*public void addActionPlayer2(Action action)
     {
         _pileActionPlayer2.addActionPlayer(action);
     }
     public void addActionPlayer3(Action action)
     {
         _pileActionPlayer3.addActionPlayer(action);
-    }
+    }*/
     public void switchFakeSimulation()
     {
         _startFakeSimulation = !_startFakeSimulation;
@@ -95,10 +112,11 @@ public class GameManagerScript : MonoBehaviour {
         {
            
             currenAction = pileActions.getAction(i);
-           
+            //Debug.Log(currenAction.get_actionState());
             switch (currenAction.get_actionState())
             {
                 case 0:
+
                     currenAction.set_actionState(1);
                     break;
                 case 1:
@@ -115,43 +133,79 @@ public class GameManagerScript : MonoBehaviour {
     public void playAction(Action action, int id)
     {
         string typeAction = action.get_typeAction();
- 
+        // _characterManager.getObjectLevelById(action.get_sceneIdObject(1))
+        
         switch(typeAction)
         {
             case "Move":
-                action.set_actionState(move(action.getCharacter(), action.getRangeMax().x));
+                action.set_actionState(move(_characterManager.getObjectLevelById(action.getIdCharacter()), action.get_informationById(0)));
                 break;
             case "Grab":
-                action.set_actionState(grab(action.getCharacter().transform, action.getTarget().transform));
+                action.set_actionState(grab(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.getIdTarget()).transform));
                 break;
             case "UnGrab":
-                action.set_actionState(unGrab(action.getTarget().transform));
+                action.set_actionState(unGrab(_characterManager.getObjectLevelById(action.getIdTarget()).transform));
                 break;
             case "Jump":
-                action.set_actionState(jump(action.getCharacter().transform, action.getTarget().transform));
+                action.set_actionState(jump(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.getIdTarget()).transform));
                 break;
             case "Teleport":
-                action.set_actionState(teleport(action.getCharacter().transform, action.getTarget().transform, action.getOtherGameObject()));
+                action.set_actionState(teleport(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.getIdTarget()).transform, _characterManager.getObjectLevelArrayById(action.get_allSceneIdObject() ) ));
                 break;
             case "Pull":
-                action.set_actionState(pull(action.getOtherGameObjectById(0), action.getTarget().transform));
+                action.set_actionState(pull(_characterManager.getObjectLevelById(action.get_sceneIdObject(0)), _characterManager.getObjectLevelById(action.getIdTarget()).transform));
                 break;
             case "Destroy":
-                action.set_actionState(destroy(action.getTarget(), action.getOtherGameObjectById(0)));
+                action.set_actionState(destroy(_characterManager.getObjectLevelById(action.getIdTarget()), _characterManager.getObjectLevelById(action.get_sceneIdObject(0))));
                 break;
             case "LeverOn":
-                action.set_actionState(lever(action.getCharacter().transform,action.getOtherGameObjectById(0).transform, action.getOtherGameObjectById(1).transform, action.getOtherGameObjectById(2).transform, action.getOtherGameObjectById(3).transform));
+                action.set_actionState(lever(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.get_sceneIdObject(0)).transform, _characterManager.getObjectLevelById(action.get_sceneIdObject(1)).transform, _characterManager.getObjectLevelById(action.get_sceneIdObject(2)).transform, _characterManager.getObjectLevelById(action.get_sceneIdObject(3)).transform));
                 break;
             case "Wait":
                 action.set_actionState(wait(action.get_informationById(0), id));
                 break;
         }
     }
-    public void setAllActionsOnCharacters()
+    public void sendMyActionList()
     {
-
+        sendActionList(_idMyCharacter);
     }
 
+
+    public void sendActionList(int id)
+    {
+        //Création d'un BinaryFormatter 
+        var b = new BinaryFormatter();
+        //Création d'un MemoryStream
+        var m = new MemoryStream();
+        for (int i = 0; i < _pileActionPlayers[id].getLength(); i++)
+        {
+           _pileActionPlayers[id].getAction(i).set_actionState(0);
+        }
+        //Sauvegarde des scores
+        b.Serialize(m, _pileActionPlayers[id]);
+        //Addition à PlayerPrefs
+        string message =  Convert.ToBase64String(m.GetBuffer());
+        networkView.RPC("receiveActionList", RPCMode.Others, message, id);
+    }
+
+    [RPC]
+    public void receiveActionList(string data, int id)
+    {
+        //Obtenir les données
+        //Si non-nul, charger
+        if (!string.IsNullOrEmpty(data))
+        {
+            //BinaryFormatter puis renvoyer les données
+            var b = new BinaryFormatter();
+            //Création d'un MemoryStream avec les données
+            var m = new MemoryStream(Convert.FromBase64String(data));
+            //Charger les nouveaux scores
+            _pileActionPlayers[id] = (PileActions)b.Deserialize(m);
+            
+        }
+    }
+    
 
     //ACTIONS FUNCTIONS !!//
 

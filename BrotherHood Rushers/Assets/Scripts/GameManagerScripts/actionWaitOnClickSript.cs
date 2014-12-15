@@ -9,8 +9,8 @@ public class actionWaitOnClickSript : MonoBehaviour {
     public SlidersManagerScript _sliderManager;
     //ici l'objet timeline
 
-    public GameObject _target;
-    public Vector3 _rangeMax;
+    public int _idTarget;
+    //public Vector3 _rangeMax;
     public Text _otherValues;
     
     // Use this for initialization
@@ -30,22 +30,26 @@ public class actionWaitOnClickSript : MonoBehaviour {
         //TODO:Securité pour le parse
         if (_gameManager.getPlayerActif() == null)
             return;
-        switch (_gameManager.getIdPlayerActif())
+
+        _gameManager.addActionPlayers(_gameManager.getIdPlayerActif(),new Action(_gameManager.getIdPlayerActif(), new List<float>() { float.Parse(_otherValues.text) }, 0, null, "Wait"));
+        _sliderManager.createMarker(_gameManager.getIdPlayerActif(), _gameManager.getPlayerActif().transform.position.x);
+
+       /* switch (_gameManager.getIdPlayerActif())
         {
             case 0:
-                _gameManager.addActionPlayer1(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>(){float.Parse(_otherValues.text) }, _target,null, "Wait"));
+                _gameManager.addActionPlayer1(new Action(_gameManager.getIdPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, 0, null, "Wait"));
                 _sliderManager.createMarker(0, _gameManager.getPlayerActif().transform.position.x);
                 break;
             case 1:
-               
-                _gameManager.addActionPlayer2(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, _target,null, "Wait"));
+
+                _gameManager.addActionPlayer2(new Action(_gameManager.getIdPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, 1, null, "Wait"));
                 _sliderManager.createMarker(1, _gameManager.getPlayerActif().transform.position.x);
                 break;
             case 2:
-                _gameManager.addActionPlayer3(new Action(_gameManager.getPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, _target,null, "Wait"));
+                _gameManager.addActionPlayer3(new Action(_gameManager.getIdPlayerActif(), _rangeMax, new List<float>() { float.Parse(_otherValues.text) }, 2, null, "Wait"));
                 _sliderManager.createMarker(2, _gameManager.getPlayerActif().transform.position.x);
                 break;
-        }
+        }*/
 
     }
 }
