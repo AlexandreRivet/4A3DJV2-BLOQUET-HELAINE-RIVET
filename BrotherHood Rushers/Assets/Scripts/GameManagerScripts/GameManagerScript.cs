@@ -158,7 +158,12 @@ public class GameManagerScript : MonoBehaviour {
     public int move(GameObject objectWhoMove, float _targetMove)
     {
 
-        Transform childrenObject = objectWhoMove.transform.GetChild(0);
+        //Attention truc dégueulasse avant la purge du code afin de réparer un "bug"
+        Transform[] childrensObjects = new Transform[objectWhoMove.transform.childCount];
+        for (int i = 0; i < childrensObjects.Length; i++)
+            childrensObjects[i] = objectWhoMove.transform.GetChild(i);
+
+        Transform childrenObject = childrensObjects[0];
         childrenObject.rigidbody.useGravity = true;
         float step = 4.0f * Time.deltaTime;
         Vector3 objectPosition = objectWhoMove.transform.position;
@@ -169,7 +174,9 @@ public class GameManagerScript : MonoBehaviour {
             childrenObject.rigidbody.useGravity = false;
             objectWhoMove.transform.DetachChildren();
             objectWhoMove.transform.position = new Vector3(objectWhoMove.transform.position.x, childrenObject.position.y - 1.0f, objectWhoMove.transform.position.z);
-            childrenObject.SetParent(objectWhoMove.transform);
+            for (int i = 0; i < childrensObjects.Length; i++)
+                childrensObjects[i].SetParent(objectWhoMove.transform);
+            
             return 2;
         }
             
@@ -248,7 +255,7 @@ public class GameManagerScript : MonoBehaviour {
         
         if (Mathf.Abs(otherObjectInformation[0].transform.position.x - objectWhoMove.position.x) > 1.5 || Mathf.Abs(otherObjectInformation[0].transform.position.y - objectWhoMove.position.y) > 1.5)
             return 3;
-        else if (Mathf.Abs(otherObjectInformation[0].transform.position.x - targetTransform.position.x) > 12 || Mathf.Abs(otherObjectInformation[0].transform.position.y - targetTransform.position.y) > 12)
+        else if (Mathf.Abs(otherObjectInformation[0].transform.position.x - targetTransform.position.x) > 12 || Mathf.Abs(otherObjectInformation[0].transform.position.y - targetTransform.position.y) > 15)
         {
             return 3;
         }
