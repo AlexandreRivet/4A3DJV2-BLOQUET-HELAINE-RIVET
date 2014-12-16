@@ -4,11 +4,7 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-//Author: Bloquet Pierre
-//Date :28/11/2014
-//Last modification : 03/12/2014
-//Descrition:
-//Note: c'est juste du test, donc rien d'important
+// Script qui contient la plupard des fonctions qui font tourner le jeu, en particuliuer c'est ce dernier qui lis les listes des actions des joueurs
 
 public class GameManagerScript : MonoBehaviour {
 
@@ -24,7 +20,14 @@ public class GameManagerScript : MonoBehaviour {
     private CharacterManager _characterManager;
     [SerializeField]
     private GameObject _gameObjectPlayerActif;
-    
+
+    [SerializeField]
+    private ResetLevelScript _resetFunctions;
+    [SerializeField]
+    private GameObject[] _panelsToSetActive;
+    [SerializeField]
+    private GameObject _buttonIsReady;
+
     private PileActions[] _pileActionPlayers = new PileActions[3];
     //private PileActions[] _pileActionPlayer2;
 	//private PileActions _pileActionPlayer3;
@@ -32,8 +35,14 @@ public class GameManagerScript : MonoBehaviour {
     
     private float[] waitBeforeOtherAction = new float[]{0.0f,0.0f,0.0f};
     private bool[] firstTimeCallAction = new bool[] { true, true, true };
+
+    private bool _isReady = false;
+    private int _nbOfPlayerReady = 0;
+    private int _nbListActionReceive = 0;
 	// Use this for initialization
 	void Start () {
+        if (Network.connections.Length == 0)
+            _buttonIsReady.SetActive(false);
         _pileActionPlayers[0] = new PileActions();
         _pileActionPlayers[1] = new PileActions();
         _pileActionPlayers[2] = new PileActions();
@@ -43,13 +52,19 @@ public class GameManagerScript : MonoBehaviour {
 	void Update () {
         if (!_startFakeSimulation)
             return;
-       
+       // on lis les actions des joueurs si on a cliqué sur Start Fake Simulation
         readPileAction(_pileActionPlayers[0], 0);
         readPileAction(_pileActionPlayers[1], 1);
         readPileAction(_pileActionPlayers[2], 2);
         
 	}
-
+    //Fonction pour reset les listes des actions
+    public void resetPileActions()
+    {
+        _pileActionPlayers[0] = new PileActions();
+        _pileActionPlayers[1] = new PileActions();
+        _pileActionPlayers[2] = new PileActions();
+    }
     public void setIdMyCharacter(int id)
     {
         _idMyCharacter = id;
@@ -98,19 +113,23 @@ public class GameManagerScript : MonoBehaviour {
     {
         _startFakeSimulation = !_startFakeSimulation;
     }
+    public void setFakeSimulation(bool value)
+    {
+        _startFakeSimulation = value;
+    }
     public void leaveApplication(string levelName)
     {
         Application.LoadLevel(levelName);
     }
 
-
+    //Fonction qui lis une pile d'action
     public void readPileAction(PileActions pileActions, int id)
     {
         Action currenAction;
     
         for (int i = 0; i < pileActions.getLength(); i++)
         {
-           
+            //Une action est définie par un état 0: action pas commencée 1: action en cour 2: action terminée 3: action interrompue
             currenAction = pileActions.getAction(i);
             //Debug.Log(currenAction.get_actionState());
             switch (currenAction.get_actionState())
@@ -130,11 +149,12 @@ public class GameManagerScript : MonoBehaviour {
 
         }
     }
+    //Lancement de l'action
     public void playAction(Action action, int id)
     {
         string typeAction = action.get_typeAction();
         // _characterManager.getObjectLevelById(action.get_sceneIdObject(1))
-        
+        //Selon le type, une action sera lancée
         switch(typeAction)
         {
             case "Move":
@@ -171,7 +191,7 @@ public class GameManagerScript : MonoBehaviour {
         sendActionList(_idMyCharacter);
     }
 
-
+    //Serialisation des données des listes des actions pour l'envoyer au autres joueurs afin de lancer la simulation
     public void sendActionList(int id)
     {
         //Création d'un BinaryFormatter 
@@ -182,7 +202,7 @@ public class GameManagerScript : MonoBehaviour {
         {
            _pileActionPlayers[id].getAction(i).set_actionState(0);
         }
-        //Sauvegarde des scores
+       
         b.Serialize(m, _pileActionPlayers[id]);
         //Addition à PlayerPrefs
         string message =  Convert.ToBase64String(m.GetBuffer());
@@ -192,20 +212,55 @@ public class GameManagerScript : MonoBehaviour {
     [RPC]
     public void receiveActionList(string data, int id)
     {
-        //Obtenir les données
-        //Si non-nul, charger
+        
         if (!string.IsNullOrEmpty(data))
         {
             //BinaryFormatter puis renvoyer les données
             var b = new BinaryFormatter();
             //Création d'un MemoryStream avec les données
             var m = new MemoryStream(Convert.FromBase64String(data));
-            //Charger les nouveaux scores
+           
             _pileActionPlayers[id] = (PileActions)b.Deserialize(m);
+            _nbListActionReceive++;
+            if (_nbListActionReceive == 2)
+            {
+                _startFakeSimulation = true;
+                _panelsToSetActive[0].SetActive(false);
+            }
+                
             
         }
     }
     
+    public void sendIsReadyAtAll()
+    {
+        _isReady = true;
+        _startFakeSimulation = false;
+        _resetFunctions.resetPositions();
+        _panelsToSetActive[0].SetActive(true);
+        _panelsToSetActive[1].SetActive(false);
+        _panelsToSetActive[2].SetActive(false);
+        _panelsToSetActive[3].SetActive(false);
+        networkView.RPC("isReadyToMe", RPCMode.All);
+    }
+
+
+    [RPC]
+    public void isReadyToMe()
+    {
+        _nbOfPlayerReady++;
+        if(_nbOfPlayerReady == 3)
+        {
+            sendActionList(_idMyCharacter);
+        }
+    }
+
+    public bool getIsReady()
+    {
+        return _isReady;
+    }
+
+
 
     //ACTIONS FUNCTIONS !!//
 
@@ -365,13 +420,24 @@ public class GameManagerScript : MonoBehaviour {
     public int door(Transform DoorTransform, Transform targetTransform)
     {
 
-        float step = 2.0f * Time.deltaTime;
+        float step = 3.0f * Time.deltaTime;
+        Vector3 objectPosition = DoorTransform.position;
+        Vector3 newPosition = Vector3.MoveTowards(DoorTransform.position, new Vector3(objectPosition.x, targetTransform.position.y, objectPosition.z), step);
+        DoorTransform.position = newPosition;
+        if (newPosition.y == targetTransform.position.y)
+        {
+            targetTransform.gameObject.SetActive(false);
+            return 2;
+        }
+        return 1;
+        //Version portes qui s'ouvre en rotation
+        /*float step = 2.0f * Time.deltaTime;
         Quaternion newRotation = Quaternion.Lerp(DoorTransform.rotation, targetTransform.rotation, step);
         DoorTransform.rotation = newRotation;
         if (newRotation == targetTransform.rotation)
             return 2;
 
 
-        return 1;
+        return 1;*/
     }
 }

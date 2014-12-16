@@ -7,8 +7,6 @@ TODO List:
 	- Commenter et purifier le code
 	- Mettre en place les sécuité des actions( range max etc..)
 	- Renommer certaines variables avec le bon nom comme  Range Max Action qui est maintenant une vector 3 quui contient ce qu'on veut
-	- Faire en sorte que la porte s'ouvre verticalement
+	
 	- Faire le win/lose
-	- séparer le mode solo du mode multi
-	- un bouton reset simulation
-	- un bouton qui propose de lancer la vrai simulation
+	

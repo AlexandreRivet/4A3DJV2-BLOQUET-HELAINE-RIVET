@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-
+//Script qui gère la sélection des personnages e ndébut de partie
 public class SelectCharacterScript : MonoBehaviour {
 
     public GameObject _characterUsed;

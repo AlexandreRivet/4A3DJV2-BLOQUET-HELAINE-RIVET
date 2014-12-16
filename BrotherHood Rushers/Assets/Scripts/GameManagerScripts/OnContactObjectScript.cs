@@ -8,7 +8,7 @@ public class OnContactObjectScript : MonoBehaviour {
     private GameObject _objectContacted;
     private GameObject _objectTrigger;
 
-    
+    //Gestion des contacts entre les objets du decors et les personnages, pas encore au points
     public void setIsContact(bool value)
     {
         _isContact = value;

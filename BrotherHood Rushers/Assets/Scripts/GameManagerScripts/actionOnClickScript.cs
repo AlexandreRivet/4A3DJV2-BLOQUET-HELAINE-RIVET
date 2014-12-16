@@ -25,7 +25,7 @@ public class actionOnClickScript : MonoBehaviour {
 	void Update () {
 	
 	}
-
+    // Ajout d'une action quand on clique sur un bouton
     public void onClick()
     {
         if (_gameManager.getPlayerActif() == null)
@@ -33,22 +33,6 @@ public class actionOnClickScript : MonoBehaviour {
 
         _gameManager.addActionPlayers(_gameManager.getIdPlayerActif(), new Action(_gameManager.getIdPlayerActif(), _otherValues, _idTarget, _sceneIdGameObjects, _actionName));
         _sliderManager.createMarker(_gameManager.getIdPlayerActif(), _characterManager.getObjectLevelById(_idTarget).transform.position.x);
-
-        /*switch (_gameManager.getIdPlayerActif())
-        {
-            case 0:
-                _gameManager.addActionPlayer1(new Action(_gameManager.getIdPlayerActif(), _rangeMax, _otherValues, _idTarget, _sceneIdGameObjects, _actionName));
-                _sliderManager.createMarker(0, _characterManager.getObjectLevelById(_idTarget).transform.position.x);
-                break;
-            case 1:
-                _gameManager.addActionPlayer2(new Action(_gameManager.getIdPlayerActif(), _rangeMax, _otherValues, _idTarget, _sceneIdGameObjects, _actionName));
-                _sliderManager.createMarker(1, _characterManager.getObjectLevelById(_idTarget).transform.position.x);
-                break;
-            case 2:
-                _gameManager.addActionPlayer3(new Action(_gameManager.getIdPlayerActif(), _rangeMax, _otherValues, _idTarget, _sceneIdGameObjects, _actionName));
-                _sliderManager.createMarker(2, _characterManager.getObjectLevelById(_idTarget).transform.position.x);
-                break;
-        }*/
        
     }
 }

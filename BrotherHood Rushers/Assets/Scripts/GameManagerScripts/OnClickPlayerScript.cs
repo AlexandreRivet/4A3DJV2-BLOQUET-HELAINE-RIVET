@@ -17,8 +17,11 @@ public class OnClickPlayerScript : MonoBehaviour {
 	void Update () {
 	
 	}
+    //Si on clique sur un personnage, le sien devient vert, et les autres redeviennent blancs
     void OnMouseDown()
     {
+        if (_gameManager.getIsReady())
+            return;
         GameObject[] arrayCharacter = _characterManager.getCharactersArray();
         GameObject[] arrayCharacterPosition = _characterManager.getCharactersPositionsArray();
         GameObject currentCharacter;
