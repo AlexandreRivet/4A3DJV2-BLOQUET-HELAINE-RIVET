@@ -1,12 +1,14 @@
 ﻿
 TODO List:
 
-	-Mettre en place les collider etc qui peuvent stoper une action
-	- Relier le lvlgame au llvlconnection
-	- Créer les fonctions d'actions manquantes(jump etc...)
-	- Faire en sorte que le personnage choisit au menu soit bien le siens et que la game puisse commencer
+	- Mettre en place les collider etc qui peuvent stoper une action
 	- Revoir peut etre la structure entre le gameManager et le characterManager
 	- Mettre les variables en privates, faire setter getter et serializer
 	- Commenter et purifier le code
 	- Mettre en place les sécuité des actions( range max etc..)
 	- Renommer certaines variables avec le bon nom comme  Range Max Action qui est maintenant une vector 3 quui contient ce qu'on veut
+	- Faire en sorte que la porte s'ouvre verticalement
+	- Faire le win/lose
+	- séparer le mode solo du mode multi
+	- un bouton reset simulation
+	- un bouton qui propose de lancer la vrai simulation
