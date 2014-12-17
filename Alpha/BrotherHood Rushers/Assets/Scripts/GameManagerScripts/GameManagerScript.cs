@@ -27,6 +27,8 @@ public class GameManagerScript : MonoBehaviour {
     private GameObject[] _panelsToSetActive;
     [SerializeField]
     private GameObject _buttonIsReady;
+    [SerializeField]
+    private GameObject _panelSelectPerso;
 
     private PileActions[] _pileActionPlayers = new PileActions[3];
     //private PileActions[] _pileActionPlayer2;
@@ -42,7 +44,11 @@ public class GameManagerScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         if (Network.connections.Length == 0)
+        {
             _buttonIsReady.SetActive(false);
+            _panelSelectPerso.SetActive(false);
+        }
+            
         _pileActionPlayers[0] = new PileActions();
         _pileActionPlayers[1] = new PileActions();
         _pileActionPlayers[2] = new PileActions();
