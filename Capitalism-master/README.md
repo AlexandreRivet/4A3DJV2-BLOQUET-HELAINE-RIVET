@@ -1,4 +1,0 @@
-Capitalism
-==========
-
-Python card game
