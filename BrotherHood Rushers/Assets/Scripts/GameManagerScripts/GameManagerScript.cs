@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -28,6 +30,16 @@ public class GameManagerScript : MonoBehaviour {
     [SerializeField]
     private GameObject _buttonIsReady;
 
+    [SerializeField]
+    private GameObject _panelSelectCharacter;
+    
+    [SerializeField]
+    private Transform _FinishZone;
+
+
+    [SerializeField]
+    private GameObject _winPanel;
+
     private PileActions[] _pileActionPlayers = new PileActions[3];
     //private PileActions[] _pileActionPlayer2;
 	//private PileActions _pileActionPlayer3;
@@ -42,7 +54,11 @@ public class GameManagerScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         if (Network.connections.Length == 0)
+        {
             _buttonIsReady.SetActive(false);
+            _panelSelectCharacter.SetActive(false);
+        }
+           
         _pileActionPlayers[0] = new PileActions();
         _pileActionPlayers[1] = new PileActions();
         _pileActionPlayers[2] = new PileActions();
@@ -52,18 +68,56 @@ public class GameManagerScript : MonoBehaviour {
 	void Update () {
         if (!_startFakeSimulation)
             return;
+
+        int statej1 = 0, statej2 = 0, statej3 = 0;
        // on lis les actions des joueurs si on a cliqué sur Start Fake Simulation
-        readPileAction(_pileActionPlayers[0], 0);
-        readPileAction(_pileActionPlayers[1], 1);
-        readPileAction(_pileActionPlayers[2], 2);
+        statej1 = readPileAction(_pileActionPlayers[0], 0);
+        statej2 = readPileAction(_pileActionPlayers[1], 1);
+        statej3 = readPileAction(_pileActionPlayers[2], 2);
+
+        if ((statej1 == 2 || statej1 == 3) && (statej2 == 2 || statej2 == 3) && (statej3 == 2 || statej3 == 3) && _isReady == true)
+        {
+            Vector3 finalPosition = _FinishZone.position;
+            Vector3 positionJ1 = _characterManager.getCharactersPositionByIndex(0).transform.position;
+            Vector3 positionJ2 = _characterManager.getCharactersPositionByIndex(1).transform.position;
+            Vector3 positionJ3 = _characterManager.getCharactersPositionByIndex(2).transform.position;
+
+            if (Vector3.Distance(finalPosition,positionJ1) <= 2100 && Vector3.Distance(finalPosition,positionJ2) <= 2100 && Vector3.Distance(finalPosition,positionJ3) <= 21000)
+            {
+
+                StartCoroutine(Wait(5.0f));
+                
+            }
+            startANewLap();
+        }
         
 	}
-    //Fonction pour reset les listes des actions
-    public void resetPileActions()
+    private IEnumerator Wait(float seconds)
     {
-        _pileActionPlayers[0] = new PileActions();
-        _pileActionPlayers[1] = new PileActions();
-        _pileActionPlayers[2] = new PileActions();
+        _winPanel.SetActive(true);
+        yield return new WaitForSeconds(seconds);
+        Network.Disconnect();
+        Application.LoadLevel(0);
+    }
+    //Fonction pour reset les listes des actions
+    public void resetPileActions(bool force)
+    {
+        if (force)
+        {
+            _pileActionPlayers[0] = new PileActions();
+            _pileActionPlayers[1] = new PileActions();
+            _pileActionPlayers[2] = new PileActions();
+        }
+        else
+        {
+            for(int i = 0; i < _pileActionPlayers.Count(); i++)
+            {
+                for (int j = 0; j < _pileActionPlayers[i].getLength(); j++)
+                {
+                    _pileActionPlayers[i].getAction(j).set_actionState(0);
+                }
+            }
+        }
     }
     public void setIdMyCharacter(int id)
     {
@@ -101,6 +155,10 @@ public class GameManagerScript : MonoBehaviour {
     {
         _pileActionPlayers[id].addActionPlayer(action);
     }
+    public void removeAction(int id, Action action)
+    {
+        _pileActionPlayers[id].removeActionPlayer(action);
+    }
     /*public void addActionPlayer2(Action action)
     {
         _pileActionPlayer2.addActionPlayer(action);
@@ -123,10 +181,10 @@ public class GameManagerScript : MonoBehaviour {
     }
 
     //Fonction qui lis une pile d'action
-    public void readPileAction(PileActions pileActions, int id)
+    public int readPileAction(PileActions pileActions, int id)
     {
         Action currenAction;
-    
+        int state = 0;
         for (int i = 0; i < pileActions.getLength(); i++)
         {
             //Une action est définie par un état 0: action pas commencée 1: action en cour 2: action terminée 3: action interrompue
@@ -135,19 +193,21 @@ public class GameManagerScript : MonoBehaviour {
             switch (currenAction.get_actionState())
             {
                 case 0:
-
                     currenAction.set_actionState(1);
-                    break;
+                    return 0;
                 case 1:
                     playAction(currenAction, id);
-                    return;
+                    return 1;
                 case 2:
+                    state = 2;
                     continue;
                 case 3:
-                    return;
+                    return 3;
             }
 
         }
+
+        return state;
     }
     //Lancement de l'action
     public void playAction(Action action, int id)
@@ -222,8 +282,10 @@ public class GameManagerScript : MonoBehaviour {
            
             _pileActionPlayers[id] = (PileActions)b.Deserialize(m);
             _nbListActionReceive++;
+            Debug.Log("nbListActionReceive: " + _nbListActionReceive);
             if (_nbListActionReceive == 2)
             {
+                _nbListActionReceive = 0;
                 _startFakeSimulation = true;
                 _panelsToSetActive[0].SetActive(false);
             }
@@ -243,14 +305,24 @@ public class GameManagerScript : MonoBehaviour {
         _panelsToSetActive[3].SetActive(false);
         networkView.RPC("isReadyToMe", RPCMode.All);
     }
-
+    public void startANewLap()
+    {
+        _resetFunctions.resetLevel();
+        _isReady = false;
+        _startFakeSimulation = false;
+        _panelsToSetActive[0].SetActive(false);
+        _panelsToSetActive[2].SetActive(true);
+        _panelsToSetActive[3].SetActive(true);
+    }
 
     [RPC]
     public void isReadyToMe()
     {
         _nbOfPlayerReady++;
+        Debug.Log("_nbOfPlayerReady: " + _nbOfPlayerReady);
         if(_nbOfPlayerReady == 3)
         {
+            _nbOfPlayerReady = 0;
             sendActionList(_idMyCharacter);
         }
     }

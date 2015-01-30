@@ -3,10 +3,14 @@ using System.Collections;
 
 public class OnClickObjectMenuScript : MonoBehaviour {
 
-    public GameManagerScript _gameManager;
-    public int[] _idPlayerWhoCanClick;
-    public GameObject _objectPanelActive;
-    public GameObject _objectMenuActive;
+    [SerializeField]
+    private GameManagerScript _gameManager;
+    [SerializeField]
+    private int[] _idPlayerWhoCanClick;
+    [SerializeField]
+    private GameObject _objectPanelActive;
+    [SerializeField]
+    private GameObject _objectMenuActive;
     /*public GameObject[] _buttonsArrayWhoCanClickJ1;
     public GameObject[] _buttonsArrayWhoCanClickJ2;
     public GameObject[] _buttonsArrayWhoCanClickJ3; */

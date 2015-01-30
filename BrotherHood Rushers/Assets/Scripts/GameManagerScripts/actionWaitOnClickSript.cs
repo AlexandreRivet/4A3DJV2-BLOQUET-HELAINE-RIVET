@@ -6,14 +6,16 @@ using System.Linq;
 
 
 public class actionWaitOnClickSript : MonoBehaviour {
-
-    public GameManagerScript _gameManager;
-    public SlidersManagerScript _sliderManager;
+    [SerializeField]
+    private GameManagerScript _gameManager;
+    [SerializeField]
+    private SlidersManagerScript _sliderManager;
     //ici l'objet timeline
-
-    public int _idTarget;
+    [SerializeField]
+    private int _idTarget;
     //public Vector3 _rangeMax;
-    public Text _otherValues;
+    [SerializeField]
+    private Text _otherValues;
     
     // Use this for initialization
     void Start()
@@ -33,7 +35,8 @@ public class actionWaitOnClickSript : MonoBehaviour {
         if (_gameManager.getPlayerActif() == null)
             return;
 
-        _gameManager.addActionPlayers(_gameManager.getIdPlayerActif(),new Action(_gameManager.getIdPlayerActif(), new List<float>() { float.Parse(_otherValues.text) }, 0, null, "Wait"));
-        _sliderManager.createMarker(_gameManager.getIdPlayerActif(), _gameManager.getPlayerActif().transform.position.x);
+        Action action_tmp = new Action(_gameManager.getIdPlayerActif(), new List<float>() { float.Parse(_otherValues.text) }, 0, null, "Wait");
+        _gameManager.addActionPlayers(_gameManager.getIdPlayerActif(), action_tmp);
+        _sliderManager.createMarker(_gameManager.getIdPlayerActif(), action_tmp, _gameManager.getPlayerActif().transform.position.x);
     }
 }

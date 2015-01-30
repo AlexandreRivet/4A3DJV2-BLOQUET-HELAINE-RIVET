@@ -3,11 +3,16 @@ using System.Collections;
 
 public class OnClickPlayerScript : MonoBehaviour {
 
-    public GameManagerScript _gameManager;
-    public CharacterManager _characterManager;
-    public int _idPlayer;
-    public Color _ColorMyButtonLock;
-    public Color _ColorMyButtonDeLock;
+    [SerializeField]
+    private GameManagerScript _gameManager;
+    [SerializeField]
+    private CharacterManager _characterManager;
+    [SerializeField]
+    private int _idPlayer;
+    [SerializeField]
+    private Color _ColorMyButtonLock;
+    [SerializeField]
+    private Color _ColorMyButtonDeLock;
 	// Use this for initialization
 	void Start () {
 	

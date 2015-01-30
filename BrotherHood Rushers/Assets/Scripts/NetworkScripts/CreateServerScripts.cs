@@ -4,13 +4,17 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CreateServerScripts : MonoBehaviour {
-
-    public int _maxConnection = 3;
+    [SerializeField]
+    private int _maxConnection = 3;
     //public string _levelName;
-    public GameObject _menuNetwork;
-    public GameObject _menuLobby;
-    public Text[] _lobbyTextArray;
-    public GameObject _buttonStartGame;
+    [SerializeField]
+    private GameObject _menuNetwork;
+    [SerializeField]
+    private GameObject _menuLobby;
+    [SerializeField]
+    private Text[] _lobbyTextArray;
+    [SerializeField]
+    private GameObject _buttonStartGame;
 
     private string _privateName = " Game Name Empty";
     private int _port = 21000;

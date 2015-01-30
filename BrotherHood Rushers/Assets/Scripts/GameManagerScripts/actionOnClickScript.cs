@@ -4,18 +4,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 public class actionOnClickScript : MonoBehaviour {
-
-    public CharacterManager _characterManager;
-    public GameManagerScript _gameManager;
-    public SlidersManagerScript _sliderManager;
-    //ici l'objet timeline
     
-    public int _idTarget;
+    [SerializeField]
+    private CharacterManager _characterManager;
+    [SerializeField]
+    private GameManagerScript _gameManager;
+    [SerializeField]
+    private SlidersManagerScript _sliderManager;
+    //ici l'objet timeline
+    [SerializeField]
+    private int _idTarget;
     //public Vector3 _rangeMax;
-    public List<float> _otherValues;
-    public GameObject[] _otherGameObjects;
-    public int[] _sceneIdGameObjects;
-    public string _actionName;
+    [SerializeField]
+    private List<float> _otherValues;
+    [SerializeField]
+    private GameObject[] _otherGameObjects;
+    [SerializeField]
+    private int[] _sceneIdGameObjects;
+    [SerializeField]
+    private string _actionName;
 	// Use this for initialization
 	void Start () {
 	
@@ -31,8 +38,9 @@ public class actionOnClickScript : MonoBehaviour {
         if (_gameManager.getPlayerActif() == null)
             return;
 
-        _gameManager.addActionPlayers(_gameManager.getIdPlayerActif(), new Action(_gameManager.getIdPlayerActif(), _otherValues, _idTarget, _sceneIdGameObjects, _actionName));
-        _sliderManager.createMarker(_gameManager.getIdPlayerActif(), _characterManager.getObjectLevelById(_idTarget).transform.position.x);
+        Action action_tmp = new Action(_gameManager.getIdPlayerActif(), _otherValues, _idTarget, _sceneIdGameObjects, _actionName);
+        _gameManager.addActionPlayers(_gameManager.getIdPlayerActif(), action_tmp);
+        _sliderManager.createMarker(_gameManager.getIdPlayerActif(), action_tmp, _characterManager.getObjectLevelById(_idTarget).transform.position.x);
        
     }
 }

@@ -3,16 +3,23 @@ using UnityEngine.UI;
 using System.Collections;
 //Script qui gère la sélection des personnages e ndébut de partie
 public class SelectCharacterScript : MonoBehaviour {
+    [SerializeField]
+    private GameObject _characterUsed;
+    [SerializeField]
+    private CharacterManager _characterManager;
+    [SerializeField]
+    private GameManagerScript _gameManager;
+    [SerializeField]
+    private Color _ColorMyButtonLock;
+    [SerializeField]
+    private Color _ColorOthersButtonLock;
 
-    public GameObject _characterUsed;
-    public CharacterManager _characterManager;
-    public GameManagerScript _gameManager;
-    public Color _ColorMyButtonLock;
-    public Color _ColorOthersButtonLock;
-
-    public GameObject _panelSelectCharacter;
-    public Button[] _buttonsArray;
-    public GameObject _buttonStartGame;
+    [SerializeField]
+    private GameObject _panelSelectCharacter;
+    [SerializeField]
+    private Button[] _buttonsArray;
+    [SerializeField]
+    private GameObject _buttonStartGame;
 
     private int _nbCharacterLocked = 0; 
 

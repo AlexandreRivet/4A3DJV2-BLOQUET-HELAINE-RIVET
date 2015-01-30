@@ -28,7 +28,12 @@ public class PileActions {
 	public void removeActionPlayerAt(int index){
 		this._pileActionPlayer.RemoveAt(index);
 	}
-
+    public void removeActionPlayer(Action action)
+    {
+        for (int i = 0; i < _pileActionPlayer.Count; i++)
+            if (_pileActionPlayer[i].Equals(action))
+                removeActionPlayerAt(i);
+    }
 	//suprall
 	public void removeAllActionPlayer(){
 		for(int i = this._pileActionPlayer.Count()-1; i>0; i--){

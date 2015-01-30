@@ -36,6 +36,7 @@ public class SlidersManagerScript : MonoBehaviour {
     [SerializeField]
     Button _markerModel;
 
+    List<Marker>[] _markerList = new List<Marker>[3];
     List<GameObject>[] _markersArray = new List<GameObject>[3];
 
     float[] lastIndex = new float[] { 0, 0, 0 };
@@ -62,6 +63,7 @@ public class SlidersManagerScript : MonoBehaviour {
 
         for (int i = 0; i < _markersArray.Length; i++)
         {
+            _markerList[i] = new List<Marker>();
             _markersArray[i] = new List<GameObject>();
         }
 	}
@@ -78,15 +80,16 @@ public class SlidersManagerScript : MonoBehaviour {
         float value = _sliders[index].value;
         float position = value * (_xLevelEnd - _xLevelStart) + _xLevelStart;
         //TODO: faire un tableau de liste d'actions
-        _gameManager.addActionPlayers(index, new Action(index, new List<float>{position}, -1, null, "Move"));
+        Action action_tmp =  new Action(index, new List<float>{position}, -1, null, "Move");
+        _gameManager.addActionPlayers(index, action_tmp);
         
         // Création du marker
-        createMarker(index, position);
+        createMarker(index, action_tmp, position);
 
         // Ajouter d'autres traitements ?
     }
 
-    public void createMarker(int index, float position)
+    public void createMarker(int index, Action action, float position)
     {
         // Création du button
         Button but = (Button)Instantiate(_markerModel);
@@ -101,10 +104,48 @@ public class SlidersManagerScript : MonoBehaviour {
         rect_transform.anchoredPosition = new Vector2(position * (1 / _scaleFactor), -(index * _offsetYSliders));
         //TODO: petit problème de décalage dans les button trouver pourquoi mm si ça doit être lié au slider
        
+        Marker _marker_Tmp = new Marker(index, action,but.gameObject,position);
+        _markerList[index].Add(_marker_Tmp);
+        _markersArray[index].Add(but.gameObject);
+
+        OnClickMarker functionCLick = but.gameObject.GetComponent<OnClickMarker>();
+        functionCLick.setSliderManager(this);
+        functionCLick.setMarker(_marker_Tmp);
         // Mise à jour du prochain ID
         lastIndex[index]++;
     }
-
+    public void destroyMarker(GameObject marker)
+    {
+        int firstIndex = -1;
+        int lastIndex = -1;
+        List<Marker> markerList_tmp;
+        Marker marker_tmp;
+        GameObject objectMarker_tmp;
+        Debug.Log(_markerList.Count());
+        for(int i = 0; i < 3; i++)
+        {
+            markerList_tmp = _markerList[i];
+            for(int j = 0; j < markerList_tmp.Count; j++)
+            {
+                marker_tmp = markerList_tmp[j];
+                objectMarker_tmp = marker_tmp.getMarker();
+                if(objectMarker_tmp.Equals(marker))
+                {
+                    firstIndex = i;
+                    lastIndex = j;
+                    List<Action> actionList_tmp = marker_tmp.getActionList();
+                    for (int k = 0; k < actionList_tmp.Count; k++)
+                        _gameManager.removeAction(i, actionList_tmp[k]);
+                    Destroy(objectMarker_tmp);
+                    break;
+                }
+            }
+            if (firstIndex != -1)
+                break;
+        }
+        Debug.Log(firstIndex + " " + lastIndex);
+        _markerList[firstIndex].RemoveAt(lastIndex); 
+    }
     public void deleteAllMarkers()
     {
         for(int i = 0; i < _markersArray.Length; i++)

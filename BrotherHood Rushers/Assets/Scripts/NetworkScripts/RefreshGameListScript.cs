@@ -4,9 +4,12 @@ using System.Collections;
 
 public class RefreshGameListScript : MonoBehaviour {
 
-    public GameObject _buttonToConnect;
-    public RectTransform _rectTranform;
-    public float _button_height = 30;
+    [SerializeField]
+    private GameObject _buttonToConnect;
+    [SerializeField]
+    private RectTransform _rectTranform;
+    [SerializeField]
+    private float _button_height = 30;
 
     private GameObject[] _buttonListToConnect;
     private HostData[] _hostData = new HostData[0];

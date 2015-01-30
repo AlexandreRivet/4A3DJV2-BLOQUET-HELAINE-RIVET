@@ -3,9 +3,10 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class SecurityConnectionServerScript : MonoBehaviour {
-
-    public GameObject _labelError;
-    public Text _labelErrorText;
+    [SerializeField]
+    private GameObject _labelError;
+    [SerializeField]
+    private Text _labelErrorText;
 	// Use this for initialization
 	void Start () {
 	

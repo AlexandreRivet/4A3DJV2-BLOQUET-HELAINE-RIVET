@@ -4,9 +4,13 @@ using System.Collections;
 public class CharacterManager : MonoBehaviour {
 
     //Manager qui contient la liste des objets de ma scènes
-    public GameObject[] _charactersArray;
-    public GameObject[] _charactersArrayPosition;
-    public GameObject[] _objectsLevel;
+    [SerializeField]
+    private GameObject[] _charactersArray;
+    [SerializeField]
+    private GameObject[] _charactersArrayPosition;
+    [SerializeField]
+    private GameObject[] _objectsLevel;
+ 
     public GameObject[] getCharactersArray()
     {
         return _charactersArray;
