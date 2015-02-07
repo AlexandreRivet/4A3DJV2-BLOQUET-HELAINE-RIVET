@@ -1,9 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\..\Boids\Assets\script\BoidsScript.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GameManagerScripts\GameManagerScript.cs">
     <Files>
-      <File FileName="..\..\..\..\Boids\Assets\script\BoidScript.cs" Line="1" Column="1" />
-      <File FileName="..\..\..\..\Boids\Assets\script\BoidsScript.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GameManagerScripts\GameManagerScript.cs" Line="150" Column="147" />
+      <File FileName="Assets\Scripts\GameManagerScripts\Action.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

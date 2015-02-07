@@ -41,6 +41,16 @@ public class GameManagerScript : MonoBehaviour {
     private bool _isReady = false;
     private int _nbOfPlayerReady = 0;
     private int _nbListActionReceive = 0;
+	//ACtuellemnt dans un tableau car j'ai besoins des 2 variable de failTest pour chaque avatar, peut etre serait il plus judicieux de les ranger dans un joueur, ou autre?
+	private float[] testFail_distance = new float[]{0.0f,0.0f,0.0f};//distance enregistré pour le test d'echec du mouvement
+	private float[] testFail_timer = new float[]{0.0f,0.0f,0.0f};// timer utilisé par le test d'echec du mouvement
+
+	[SerializeField]
+	private float _testFail_ErrorDistance = 2f;
+
+	[SerializeField]
+	private float _testFail_timerLoop = 5f;
+
 	// Use this for initialization
 	void Start () {
         if (Network.connections.Length == 0)
@@ -137,7 +147,7 @@ public class GameManagerScript : MonoBehaviour {
     }
 
     //Fonction qui lis une pile d'action
-    public void readPileAction(PileActions pileActions, int id)
+    public bool readPileAction(PileActions pileActions, int id)//retourne un bool si on veut erreter d'entrer dans la boucle en cas de triple fail
     {
         Action currenAction;
     
@@ -149,19 +159,20 @@ public class GameManagerScript : MonoBehaviour {
             switch (currenAction.get_actionState())
             {
                 case 0:
-
                     currenAction.set_actionState(1);
                     break;
                 case 1:
                     playAction(currenAction, id);
-                    return;
+                    return true;
                 case 2:
                     continue;
                 case 3:
-                    return;
+					//Fail option
+					Debug.Log("Fail");
+                    return false;
             }
-
         }
+		return true;
     }
     //Lancement de l'action
     public void playAction(Action action, int id)
@@ -172,7 +183,7 @@ public class GameManagerScript : MonoBehaviour {
         switch(typeAction)
         {
             case "Move":
-                action.set_actionState(move(_characterManager.getObjectLevelById(action.getIdCharacter()), action.get_informationById(0)));
+			action.set_actionState(move(_characterManager.getObjectLevelById(action.getIdCharacter()), action.get_informationById(0), action.getIdCharacter()));//je recup l'id du player pour les tableau de testfail
                 break;
             case "Grab":
                 action.set_actionState(grab(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.getIdTarget()).transform));
@@ -277,15 +288,27 @@ public class GameManagerScript : MonoBehaviour {
 
 
     //ACTIONS FUNCTIONS !!//
-
-    public int move(GameObject objectWhoMove, float _targetMove)
+	//edited by Pedro lé magnifique
+    public int move(GameObject objectWhoMove, float _targetMove, int idPlayer)
     {
-
         //Attention truc dégueulasse avant la purge du code afin de réparer un "bug"
-        Transform[] childrensObjects = new Transform[objectWhoMove.transform.childCount];
-        for (int i = 0; i < childrensObjects.Length; i++)
-            childrensObjects[i] = objectWhoMove.transform.GetChild(i);
+		//je rajoute encore plus de truc "degeulasse", j'ai besoins d'une mesure de temp et je la met ici
+		//Echec par timer / distance
+		if(testFail_timer[idPlayer] > _testFail_timerLoop){
+			Debug.Log("testFail at "+testFail_timer[idPlayer]);
+			//reset du timer
+			testFail_timer[idPlayer] = 0;
+			if(!moveFailTest(objectWhoMove, _targetMove, idPlayer)){//si echec du test
+				return 3;//on retourne un echec
+			}
+		}
 
+		testFail_timer[idPlayer] += Time.deltaTime;//timer
+
+        Transform[] childrensObjects = new Transform[objectWhoMove.transform.childCount];
+        for (int i = 0; i < childrensObjects.Length; i++){
+            childrensObjects[i] = objectWhoMove.transform.GetChild(i);
+		}
         Transform childrenObject = childrensObjects[0];
         childrenObject.rigidbody.useGravity = true;
         float step = 4.0f * Time.deltaTime;
@@ -297,48 +320,69 @@ public class GameManagerScript : MonoBehaviour {
             childrenObject.rigidbody.useGravity = false;
             objectWhoMove.transform.DetachChildren();
             objectWhoMove.transform.position = new Vector3(objectWhoMove.transform.position.x, childrenObject.position.y - 1.0f, objectWhoMove.transform.position.z);
-            for (int i = 0; i < childrensObjects.Length; i++)
-                childrensObjects[i].SetParent(objectWhoMove.transform);
-            
+            for (int i = 0; i < childrensObjects.Length; i++){
+				childrensObjects[i].SetParent(objectWhoMove.transform);
+			}
+			//reset du test d'echec une fois l'action fini
+			testFail_distance[idPlayer] = 0;
+			testFail_timer[idPlayer] = 0;
+
             return 2;
         }
-            
-
         return 1;
     }
+
+	//cette fonction doit etre appelé a intervalle regulier durant l'action move
+	public bool moveFailTest(GameObject objectWhoMove, float _targetMove, int idPlayer){//Test if the object moved toward the target 
+		if(testFail_distance[idPlayer] == 0){
+			testFail_distance[idPlayer] = Mathf.Abs(objectWhoMove.transform.position.x - _targetMove);
+		}else{
+			if((testFail_distance[idPlayer] - Mathf.Abs(objectWhoMove.transform.position.x - _targetMove))>_testFail_ErrorDistance){//on verifie si on c'est rapproché de la cible suffisement, sinon on en deduit que le joueur est bloqué et on lance la procedure d'echec
+				testFail_distance[idPlayer] = Mathf.Abs(objectWhoMove.transform.position.x - _targetMove);
+				return true;
+			}
+		}
+		testFail_distance[idPlayer] = 0;
+		return false;
+	}
 
     public int jump(Transform objectWhoMove, Transform targetMove)
     {
-        if (Mathf.Abs(targetMove.position.x - objectWhoMove.position.x) > 6 || Mathf.Abs(targetMove.position.y - objectWhoMove.position.y) > 4)
-            return 3;
-        Transform childrenObject = objectWhoMove.GetChild(0);
-        childrenObject.rigidbody.useGravity = false;
-        if(childrenObject.gameObject.GetComponent<OnContactObjectScript>().isContact())
-        {
-            childrenObject.rigidbody.useGravity = true;
-            return 3;
-        }
-        float step = 4.0f * Time.deltaTime;
-        Vector3 objectPosition = objectWhoMove.position;
+		if(false/*GrabValue Player = false*/){
+	        if (Mathf.Abs(targetMove.position.x - objectWhoMove.position.x) > 6 || Mathf.Abs(targetMove.position.y - objectWhoMove.position.y) > 4)
+	            return 3;
+	        Transform childrenObject = objectWhoMove.GetChild(0);
+	        childrenObject.rigidbody.useGravity = false;
+	        if(childrenObject.gameObject.GetComponent<OnContactObjectScript>().isContact())
+	        {
+	            childrenObject.rigidbody.useGravity = true;
+	            return 3;
+	        }
+	        float step = 4.0f * Time.deltaTime;
+	        Vector3 objectPosition = objectWhoMove.position;
 
-        if (objectPosition.y != targetMove.position.y)
-        {
-            Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.position, new Vector3(objectPosition.x, targetMove.position.y, objectPosition.z), step);
-            objectWhoMove.position = newPosition;
-        }
-        else if (objectPosition.x != targetMove.position.x)
-        {
-            Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.transform.position, new Vector3(targetMove.position.x, objectPosition.y, objectPosition.z), step);
-            objectWhoMove.position = newPosition;
-        }
-       
+	        if (objectPosition.y != targetMove.position.y)
+	        {
+	            Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.position, new Vector3(objectPosition.x, targetMove.position.y, objectPosition.z), step);
+	            objectWhoMove.position = newPosition;
+	        }
+	        else if (objectPosition.x != targetMove.position.x)
+	        {
+	            Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.transform.position, new Vector3(targetMove.position.x, objectPosition.y, objectPosition.z), step);
+	            objectWhoMove.position = newPosition;
+	        }
+	       
 
-        if (objectWhoMove.position.x == targetMove.position.x && objectWhoMove.position.y == targetMove.position.y)
-            return 2;
-            
+	        if (objectWhoMove.position.x == targetMove.position.x && objectWhoMove.position.y == targetMove.position.y)
+	            return 2;
+	            
 
-        return 1;
+	        return 1;
+		}else{
+			return 3;
+		}
     }
+
     public int wait(float timeToWait, int id)
     {
         if (firstTimeCallAction[id])
