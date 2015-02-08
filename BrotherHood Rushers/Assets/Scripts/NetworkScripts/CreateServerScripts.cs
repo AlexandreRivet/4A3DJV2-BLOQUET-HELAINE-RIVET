@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class CreateServerScripts : MonoBehaviour {
     [SerializeField]
+    private NetworkManager _networkManager;
+    [SerializeField]
     private int _maxConnection = 3;
     //public string _levelName;
     [SerializeField]
@@ -16,13 +18,15 @@ public class CreateServerScripts : MonoBehaviour {
     [SerializeField]
     private GameObject _buttonStartGame;
 
+    private string _privateTypeGame = "Level1";
     private string _privateName = " Game Name Empty";
     private int _port = 21000;
     private bool _initServer = false;
     private List<NetworkPlayer> playersArray = new List<NetworkPlayer>();
+    private bool _gameStart = false;
 	// Use this for initialization
 	void Start () {
-       
+        Debug.developerConsoleVisible = true;
 	}
 	
 	// Update is called once per frame
@@ -41,7 +45,10 @@ public class CreateServerScripts : MonoBehaviour {
         if (int.TryParse(port.text, out _port))
             _port = int.Parse(port.text); 
     }
-
+    public void setPrivateTypeGame(string name)
+    {
+        _privateTypeGame = name; //TODO: voir s'il est possible d'écraser une partie déjà existante, si oui mettre une sécurité
+    }
     //Getter
 
     public string getPrivateName()
@@ -61,7 +68,7 @@ public class CreateServerScripts : MonoBehaviour {
     {
         //Network.InitializeSecurity(); //Permet de protéger son jeu des tricheurs :D
         Network.InitializeServer(_maxConnection, _port, !Network.HavePublicAddress());
-        MasterServer.RegisterHost("BHR", _privateName, "Welcome to Brotherhood Runners");
+        MasterServer.RegisterHost(_privateTypeGame, _privateName, "Welcome to Brotherhood Runners");
     }
 
     //Fonction de debug appelée quand le serveur est initialisé
@@ -73,7 +80,7 @@ public class CreateServerScripts : MonoBehaviour {
     //Fonction de debug appelée quand le Master serveur est créé
     public void OnMasterServerEvent(MasterServerEvent mse)
     {
-        if (mse == MasterServerEvent.RegistrationSucceeded && !_initServer)
+        if (mse == MasterServerEvent.RegistrationSucceeded && !_initServer && !_gameStart)
 	    {
             Debug.Log("Connection Succeful");
             //Application.LoadLevel(_levelName);
@@ -86,15 +93,18 @@ public class CreateServerScripts : MonoBehaviour {
     //Fonction de debug appelée quand un nouveau joueur se connecte
     private void OnPlayerConnected(NetworkPlayer player)
     {
+        if (_gameStart)
+            return;
         Debug.Log("New player");
-        playersArray.Add(player);
-        /*if (Network.connections.Length > _maxConnection-1)
+       
+        if (Network.connections.Length > _maxConnection-1)
         {
             Debug.Log("Trop de connection");
             Network.CloseConnection(player, true);
-        }*/
-        //else
+        }
+        else
         {
+            playersArray.Add(player);
             networkView.RPC("ConnectPlayerToGameRPC", RPCMode.All, player, playersArray.Count);
             if (playersArray.Count == _maxConnection - 1)
             {
@@ -106,6 +116,8 @@ public class CreateServerScripts : MonoBehaviour {
     //Fonction de debug appelée quand un nouveau joueur se deconnecte
     private void OnPlayerDisconnected(NetworkPlayer player)
     {
+        if (_gameStart)
+            return;
         Debug.Log("Disconnected player");
         Debug.Log("Clean up after player " + player);
         Network.RemoveRPCs(player);
@@ -117,9 +129,11 @@ public class CreateServerScripts : MonoBehaviour {
             _buttonStartGame.SetActive(false);
         }
     }
-    public void ClickToStart(string levelName)
+    public void ClickToStart()
     {
-        networkView.RPC("ClickToStartRPC", RPCMode.All, levelName);
+        _gameStart = true;
+        _networkManager.InitNetwork();
+        networkView.RPC("ClickToStartRPC", RPCMode.All, _privateTypeGame);
     }
 
     [RPC]

@@ -10,6 +10,11 @@ using System.IO;
 
 public class GameManagerScript : MonoBehaviour {
 
+    public static GameManagerScript Instance { get; private set; }
+    
+
+    [SerializeField]
+    private int _nextLevel = 0;
 
     [SerializeField]
     private int _idMyCharacter;
@@ -27,6 +32,7 @@ public class GameManagerScript : MonoBehaviour {
     private ResetLevelScript _resetFunctions;
     [SerializeField]
     private GameObject[] _panelsToSetActive;
+    
     [SerializeField]
     private GameObject _buttonIsReady;
 
@@ -51,8 +57,18 @@ public class GameManagerScript : MonoBehaviour {
     private bool _isReady = false;
     private int _nbOfPlayerReady = 0;
     private int _nbListActionReceive = 0;
+    void Awake()
+    {
+        Instance = this;
+    }
 	// Use this for initialization
 	void Start () {
+
+        if(Network.isClient)
+        {
+            NetworkManager.Instance.networkView.RPC("TakeMyCharacter", RPCMode.Server, PlayerPrefs.GetString("MyKeyGame"), Network.player);
+        }
+           
         if (Network.connections.Length == 0)
         {
             _buttonIsReady.SetActive(false);
@@ -82,7 +98,7 @@ public class GameManagerScript : MonoBehaviour {
             Vector3 positionJ2 = _characterManager.getCharactersPositionByIndex(1).transform.position;
             Vector3 positionJ3 = _characterManager.getCharactersPositionByIndex(2).transform.position;
 
-            if (Vector3.Distance(finalPosition,positionJ1) <= 2100 && Vector3.Distance(finalPosition,positionJ2) <= 2100 && Vector3.Distance(finalPosition,positionJ3) <= 21000)
+            if (Vector3.Distance(finalPosition,positionJ1) <= 2 && Vector3.Distance(finalPosition,positionJ2) <= 2 && Vector3.Distance(finalPosition,positionJ3) <= 2)
             {
 
                 StartCoroutine(Wait(5.0f));
@@ -97,7 +113,11 @@ public class GameManagerScript : MonoBehaviour {
         _winPanel.SetActive(true);
         yield return new WaitForSeconds(seconds);
         Network.Disconnect();
-        Application.LoadLevel(0);
+        Application.LoadLevel(_nextLevel);
+    }
+    public void setActivePanelSelectCharac(bool value)
+    {
+        _panelSelectCharacter.SetActive(value);
     }
     //Fonction pour reset les listes des actions
     public void resetPileActions(bool force)
@@ -218,13 +238,13 @@ public class GameManagerScript : MonoBehaviour {
         switch(typeAction)
         {
             case "Move":
-                action.set_actionState(move(_characterManager.getObjectLevelById(action.getIdCharacter()), action.get_informationById(0)));
+                action.set_actionState(move(_characterManager.getObjectLevelById(action.getIdCharacter()), action.get_informationById(0), _characterManager.getCharactersByIndex(action.get_sceneIdObject(0))));
                 break;
             case "Grab":
                 action.set_actionState(grab(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.getIdTarget()).transform));
                 break;
             case "UnGrab":
-                action.set_actionState(unGrab(_characterManager.getObjectLevelById(action.getIdTarget()).transform));
+                action.set_actionState(unGrab(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.getIdTarget()).transform));
                 break;
             case "Jump":
                 action.set_actionState(jump(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, _characterManager.getObjectLevelById(action.getIdTarget()).transform));
@@ -336,25 +356,39 @@ public class GameManagerScript : MonoBehaviour {
 
     //ACTIONS FUNCTIONS !!//
 
-    public int move(GameObject objectWhoMove, float _targetMove)
+    public int move(GameObject objectWhoMove, float _targetMove, GameObject childrenObjectWhoMove)
     {
 
         //Attention truc dégueulasse avant la purge du code afin de réparer un "bug"
+        Rigidbody childrenRigidbody = childrenObjectWhoMove.rigidbody;
+        childrenRigidbody.rigidbody.useGravity = true;
+        childrenRigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionZ;
         Transform[] childrensObjects = new Transform[objectWhoMove.transform.childCount];
         for (int i = 0; i < childrensObjects.Length; i++)
             childrensObjects[i] = objectWhoMove.transform.GetChild(i);
 
-        Transform childrenObject = childrensObjects[0];
-        childrenObject.rigidbody.useGravity = true;
+        Transform childrenObject = childrenObjectWhoMove.transform;
+        //childrenRigidbody.useGravity = true;
         float step = 4.0f * Time.deltaTime;
         Vector3 objectPosition = objectWhoMove.transform.position;
         Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.transform.position, new Vector3(_targetMove, objectPosition.y, objectPosition.z), step);
         objectWhoMove.transform.position = newPosition;
+        if (Mathf.Abs(newPosition.x - childrenObject.position.x) >= 2)
+        {
+            //childrenRigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            objectWhoMove.transform.DetachChildren();
+            objectWhoMove.transform.position = new Vector3(childrenObject.position.x, objectWhoMove.transform.position.y, objectWhoMove.transform.position.z);
+            for (int i = 0; i < childrensObjects.Length; i++)
+                childrensObjects[i].SetParent(objectWhoMove.transform);
+
+            Debug.Log("Error Move");
+            return 2;
+        }
         if (newPosition.x == _targetMove)
         {
-            childrenObject.rigidbody.useGravity = false;
+            //childrenRigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
             objectWhoMove.transform.DetachChildren();
-            objectWhoMove.transform.position = new Vector3(objectWhoMove.transform.position.x, childrenObject.position.y - 1.0f, objectWhoMove.transform.position.z);
+            objectWhoMove.transform.position = new Vector3(childrenObject.position.x, objectWhoMove.transform.position.y, objectWhoMove.transform.position.z);
             for (int i = 0; i < childrensObjects.Length; i++)
                 childrensObjects[i].SetParent(objectWhoMove.transform);
             
@@ -367,18 +401,59 @@ public class GameManagerScript : MonoBehaviour {
 
     public int jump(Transform objectWhoMove, Transform targetMove)
     {
-        if (Mathf.Abs(targetMove.position.x - objectWhoMove.position.x) > 6 || Mathf.Abs(targetMove.position.y - objectWhoMove.position.y) > 4)
-            return 3;
+        
         Transform childrenObject = objectWhoMove.GetChild(0);
+        GameObject targetMoveObject = targetMove.gameObject;
         childrenObject.rigidbody.useGravity = false;
+        if (targetMoveObject.tag == "isGrabed" && objectWhoMove.gameObject.tag == "isGrabing")
+        {
+            //childrenObject.rigidbody.useGravity = true;
+            return 2;
+        }
+        if (Mathf.Abs(targetMove.position.x - childrenObject.position.x) > 6 || Mathf.Abs(targetMove.position.y - childrenObject.position.y) > 4)
+        {
+            childrenObject.rigidbody.useGravity = true;
+            return 2;
+        }
         if(childrenObject.gameObject.GetComponent<OnContactObjectScript>().isContact())
         {
             childrenObject.rigidbody.useGravity = true;
-            return 3;
+            return 2;
         }
-        float step = 4.0f * Time.deltaTime;
-        Vector3 objectPosition = objectWhoMove.position;
+        
+        float step = 8.0f * Time.deltaTime;
+        Vector3 newPosition = new Vector3();
+        Vector3 objectPosition = childrenObject.position;
+        Vector3 objectPositionFather = objectWhoMove.position;
+        if (objectPosition.y != targetMove.position.y + 1)
+        {
 
+            newPosition = Vector3.MoveTowards(childrenObject.position, new Vector3(objectPosition.x, targetMove.position.y + 1, objectPosition.z), step);
+            childrenObject.position = newPosition;
+        }
+        else if (objectPosition.x != targetMove.position.x)
+        {
+            newPosition = Vector3.MoveTowards(objectWhoMove.transform.position, new Vector3(targetMove.position.x, objectPositionFather.y, objectPositionFather.z), step);
+            objectWhoMove.position = newPosition;
+        }
+        if (Mathf.Abs(newPosition.x - childrenObject.position.x) >= 2)
+        {
+            //childrenRigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            objectWhoMove.transform.DetachChildren();
+            objectWhoMove.transform.position = new Vector3(childrenObject.position.x, objectWhoMove.transform.position.y, objectWhoMove.transform.position.z);
+            childrenObject.SetParent(objectWhoMove.transform);
+
+            Debug.Log("Error Move");
+            return 2;
+        }
+        //Debug.Log(Mathf.Abs(childrenObject.position.x - targetMove.position.x) + "  " + Mathf.Abs(childrenObject.position.y - targetMove.position.y));
+        if ((Mathf.Abs(objectWhoMove.position.x - targetMove.position.x) <= 0.01) && (Mathf.Abs(childrenObject.position.y - targetMove.position.y) <= 0.01 + 1))
+        {
+            childrenObject.rigidbody.useGravity = true;
+            return 2;
+        }
+            
+        /*Vector3 objectPosition = objectWhoMove.position;
         if (objectPosition.y != targetMove.position.y)
         {
             Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.position, new Vector3(objectPosition.x, targetMove.position.y, objectPosition.z), step);
@@ -389,11 +464,9 @@ public class GameManagerScript : MonoBehaviour {
             Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.transform.position, new Vector3(targetMove.position.x, objectPosition.y, objectPosition.z), step);
             objectWhoMove.position = newPosition;
         }
-       
 
         if (objectWhoMove.position.x == targetMove.position.x && objectWhoMove.position.y == targetMove.position.y)
-            return 2;
-            
+            return 2;*/
 
         return 1;
     }
@@ -415,14 +488,19 @@ public class GameManagerScript : MonoBehaviour {
     }
     public int grab(Transform objectTransform, Transform targetTransform)
     {
-        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > 4 || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > 4)
-            return 3;
+        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > 4 || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > 4 || (targetTransform.gameObject.tag == "isGrabed" && objectTransform.gameObject.tag == "isGrabing"))
+            return 2;
+
+        objectTransform.gameObject.tag = "isGrabing";
+        targetTransform.gameObject.tag = "isGrabed";
         targetTransform.SetParent(objectTransform);
         return 2;
     }
-    
-    public int unGrab(Transform targetTransform)
+
+    public int unGrab(Transform objectTransform, Transform targetTransform)
     {
+        objectTransform.gameObject.tag = "Untagged";
+        targetTransform.gameObject.tag = "Untagged";
         targetTransform.SetParent(null);
         return 2;
     }
@@ -433,22 +511,23 @@ public class GameManagerScript : MonoBehaviour {
         Debug.Log("1 " + otherObjectInformation[0].transform.position.x + " " + targetTransform.gameObject.name + " " + targetTransform.position.x + " " + targetTransform.position.y);
        
         //Debug.Log("3 " + !otherObjectInformation[1].activeSelf + " " + otherObjectInformation[2].activeSelf);
-        
-        if (Mathf.Abs(otherObjectInformation[0].transform.position.x - objectWhoMove.position.x) > 1.5 || Mathf.Abs(otherObjectInformation[0].transform.position.y - objectWhoMove.position.y) > 1.5)
-            return 3;
+        Transform childrenObject = objectWhoMove.GetChild(0);
+        if (Mathf.Abs(otherObjectInformation[0].transform.position.x - objectWhoMove.position.x) > 1.5 || Mathf.Abs(otherObjectInformation[0].transform.position.y - childrenObject.position.y) > 1.5)
+            return 2;
         else if (Mathf.Abs(otherObjectInformation[0].transform.position.x - targetTransform.position.x) > 12 || Mathf.Abs(otherObjectInformation[0].transform.position.y - targetTransform.position.y) > 15)
         {
-            return 3;
+            return 2;
         }
         if(otherObjectInformation.Length == 3)
         {
             if(otherObjectInformation[1].activeSelf || otherObjectInformation[2].activeSelf)
             {
-                return 3;
+                return 2;
             }
         }
-        
-        objectWhoMove.position = new Vector3(targetTransform.position.x, targetTransform.position.y, targetTransform.position.z);
+
+        childrenObject.position = new Vector3(childrenObject.position.x, targetTransform.position.y, childrenObject.position.z);
+        objectWhoMove.position = new Vector3(targetTransform.position.x, objectWhoMove.position.y, objectWhoMove.position.z);
         return 2;
     }
 
@@ -471,15 +550,15 @@ public class GameManagerScript : MonoBehaviour {
     public int destroy(GameObject target, GameObject otherInformation)
     {
         if (otherInformation.activeSelf)
-            return 3;
+            return 2;
         target.SetActive(false) ;
         return 2;
     }
     public int lever(Transform objectWhoMove,Transform LeverTransform, Transform targetTransform, Transform DoorTransform, Transform targetTransform2)
     {
-
-        if (Mathf.Abs(LeverTransform.position.x - objectWhoMove.position.x) > 4 || Mathf.Abs(LeverTransform.position.y - objectWhoMove.position.y) > 4)
-            return 3;
+        Transform childrenObject = objectWhoMove.GetChild(0);
+        if (Mathf.Abs(LeverTransform.position.x - objectWhoMove.position.x) > 4 || Mathf.Abs(LeverTransform.position.y - childrenObject.position.y) > 4)
+            return 2;
         float step = 2.0f * Time.deltaTime;
         Quaternion newRotation = Quaternion.Lerp(LeverTransform.rotation, targetTransform.rotation,step);
         LeverTransform.rotation = newRotation;

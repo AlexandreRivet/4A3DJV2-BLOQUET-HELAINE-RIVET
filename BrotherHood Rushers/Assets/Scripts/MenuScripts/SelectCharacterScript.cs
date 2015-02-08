@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 //Script qui gère la sélection des personnages e ndébut de partie
 public class SelectCharacterScript : MonoBehaviour {
     [SerializeField]
@@ -38,6 +39,8 @@ public class SelectCharacterScript : MonoBehaviour {
         _gameManager.setIdMyCharacter(index);
         _gameManager.setIdPlayerActif(index);
         _gameManager.setPlayerActif(currentCharacterPosition);
+        if(Network.isClient)
+            networkView.RPC("sendMyIdCharact", RPCMode.Server, index, PlayerPrefs.GetString("MyKeyGame"));
 
     }
     
@@ -71,5 +74,19 @@ public class SelectCharacterScript : MonoBehaviour {
         for (int i = 0; i < index.Length; i++ )
             _buttonsArray[index[i]].interactable = false;
     }
+    [RPC]
+    public void sendMyIdCharact(int index, string key)
+    {
+        List<Player> playerList = NetworkManager.Instance.getListPlayer();
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            if (playerList[i].getKey().Equals(key))
+            {
+                NetworkManager.Instance.setIdCharacter(i, index);
+            }
+        }
+    }
+   
+    
 
 }

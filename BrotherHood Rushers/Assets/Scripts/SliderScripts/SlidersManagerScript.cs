@@ -80,7 +80,7 @@ public class SlidersManagerScript : MonoBehaviour {
         float value = _sliders[index].value;
         float position = value * (_xLevelEnd - _xLevelStart) + _xLevelStart;
         //TODO: faire un tableau de liste d'actions
-        Action action_tmp =  new Action(index, new List<float>{position}, -1, null, "Move");
+        Action action_tmp =  new Action(index, new List<float>{position}, -1, new int[]{index}, "Move");
         _gameManager.addActionPlayers(index, action_tmp);
         
         // Création du marker
@@ -91,6 +91,20 @@ public class SlidersManagerScript : MonoBehaviour {
 
     public void createMarker(int index, Action action, float position)
     {
+        // Test si un bouton est deja sur la position, si oui, on ajoute juste l'action au bouton présent
+        Marker _marker_Tmp;
+        for (int i = 0; i < _markerList[index].Count(); i++)
+        {
+            _marker_Tmp = _markerList[index][i];
+            if (Mathf.Abs(position - _marker_Tmp.getPosition()) < 0.5)
+            {
+                Debug.Log("kek");
+                _marker_Tmp.addAction(action);
+                return;
+            }
+
+        }
+        
         // Création du button
         Button but = (Button)Instantiate(_markerModel);
         but.name = "Marker_" + index + "_" + lastIndex[index];
@@ -103,8 +117,9 @@ public class SlidersManagerScript : MonoBehaviour {
         rect_transform.anchoredPosition3D = new Vector3(0, 0, 0);
         rect_transform.anchoredPosition = new Vector2(position * (1 / _scaleFactor), -(index * _offsetYSliders));
         //TODO: petit problème de décalage dans les button trouver pourquoi mm si ça doit être lié au slider
-       
-        Marker _marker_Tmp = new Marker(index, action,but.gameObject,position);
+        
+        Debug.Log("kek2");
+        _marker_Tmp = new Marker(index, action, but.gameObject, position);
         _markerList[index].Add(_marker_Tmp);
         _markersArray[index].Add(but.gameObject);
 

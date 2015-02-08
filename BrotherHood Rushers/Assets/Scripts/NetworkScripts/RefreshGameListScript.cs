@@ -8,8 +8,10 @@ public class RefreshGameListScript : MonoBehaviour {
     private GameObject _buttonToConnect;
     [SerializeField]
     private RectTransform _rectTranform;
+    /*[SerializeField]
+    private float _button_height = 30;*/
     [SerializeField]
-    private float _button_height = 30;
+    private string _gameLevel = "";
 
     private GameObject[] _buttonListToConnect;
     private HostData[] _hostData = new HostData[0];
@@ -29,7 +31,8 @@ public class RefreshGameListScript : MonoBehaviour {
     // Resfresh la liste des parties en cours
     public void refreshHostList()
     {
-        MasterServer.RequestHostList("BHR");
+        Debug.Log(_gameLevel);
+        MasterServer.RequestHostList(_gameLevel);
     }
 
     //Ajoute, positionne les boutons de la liste des parties en cours. Permettant ainsi de se connecter à une partie
@@ -43,14 +46,13 @@ public class RefreshGameListScript : MonoBehaviour {
 
         _buttonListToConnect = new GameObject[_hostData.Length];
 
-        if (_rectTranform.rect.height < _hostData.Length * (_button_height + 5))
-            _rectTranform.sizeDelta = new Vector2(_rectTranform.rect.width, (_hostData.Length * (_button_height + 5)));
+        /*if (_rectTranform.rect.height < _hostData.Length * (_button_height + 5))
+            _rectTranform.sizeDelta = new Vector2(_rectTranform.rect.width, (_hostData.Length * (_button_height + 5)));*/
 
-        _rectTranform.anchoredPosition = new Vector2(0, -_rectTranform.rect.height / 2);
-
+        //_rectTranform.anchoredPosition = new Vector2(0, -_rectTranform.rect.height / 2);
         for (int i = 0; i < _hostData.Length; i++)
 		{
-            if (!(_hostData[i].gameType.Equals("BHR")))
+            if (!(_hostData[i].gameType.Equals(_gameLevel)))
                 return;
 
             //obligé de sauvegarder le i car il est perdu lors de l'ajout du listener au bouton. //TODO: Voir pourquoi
@@ -65,7 +67,7 @@ public class RefreshGameListScript : MonoBehaviour {
             rectTransform_current.anchoredPosition = new Vector2(0, -i * (rectTransform_current.sizeDelta.y + 10) - rectTransform_current.sizeDelta.y/2);
 
             button_current = _buttonListToConnect[i].GetComponent<Button>();
-            button_current.onClick.AddListener(() => { connectAtGame(_indexGameToConnect); });
+            button_current.onClick.AddListener(() => { this.connectAtGame(_indexGameToConnect); });
            
 		}
     }
@@ -73,6 +75,7 @@ public class RefreshGameListScript : MonoBehaviour {
     //Connexion à une partie
     public void connectAtGame(int i)
     {
+        Debug.Log(_hostData[i].gameType + " " + _gameLevel + "  " + i + " " + _hostData[i].port);
         Network.Connect(_hostData[i]);
     }
 
@@ -81,8 +84,14 @@ public class RefreshGameListScript : MonoBehaviour {
         //Received a host list from the master server
         if (mse == MasterServerEvent.HostListReceived)
         {
-            _hostData = MasterServer.PollHostList();
-            addButtonGameList();
+            Debug.Log("Receive  " + _gameLevel);
+            HostData[] hostData_tmp = MasterServer.PollHostList();
+
+            if (hostData_tmp.Length >= 0 && hostData_tmp[0].gameType.Equals(_gameLevel))
+            {
+                _hostData = hostData_tmp;
+                addButtonGameList();
+            } 
         }
     }
 }
