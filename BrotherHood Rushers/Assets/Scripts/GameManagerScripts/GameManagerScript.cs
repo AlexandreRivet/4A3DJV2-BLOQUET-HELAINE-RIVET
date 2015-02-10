@@ -302,7 +302,7 @@ public class GameManagerScript : MonoBehaviour {
            
             _pileActionPlayers[id] = (PileActions)b.Deserialize(m);
             _nbListActionReceive++;
-            Debug.Log("nbListActionReceive: " + _nbListActionReceive);
+            //Debug.Log("nbListActionReceive: " + _nbListActionReceive);
             if (_nbListActionReceive == 2)
             {
                 _nbListActionReceive = 0;
@@ -339,7 +339,7 @@ public class GameManagerScript : MonoBehaviour {
     public void isReadyToMe()
     {
         _nbOfPlayerReady++;
-        Debug.Log("_nbOfPlayerReady: " + _nbOfPlayerReady);
+        //Debug.Log("_nbOfPlayerReady: " + _nbOfPlayerReady);
         if(_nbOfPlayerReady == 3)
         {
             _nbOfPlayerReady = 0;
@@ -381,7 +381,7 @@ public class GameManagerScript : MonoBehaviour {
             for (int i = 0; i < childrensObjects.Length; i++)
                 childrensObjects[i].SetParent(objectWhoMove.transform);
 
-            Debug.Log("Error Move");
+            //Debug.Log("Error Move");
             return 2;
         }
         if (newPosition.x == _targetMove)
@@ -443,7 +443,7 @@ public class GameManagerScript : MonoBehaviour {
             objectWhoMove.transform.position = new Vector3(childrenObject.position.x, objectWhoMove.transform.position.y, objectWhoMove.transform.position.z);
             childrenObject.SetParent(objectWhoMove.transform);
 
-            Debug.Log("Error Move");
+            //Debug.Log("Error Move");
             return 2;
         }
         //Debug.Log(Mathf.Abs(childrenObject.position.x - targetMove.position.x) + "  " + Mathf.Abs(childrenObject.position.y - targetMove.position.y));
@@ -507,10 +507,9 @@ public class GameManagerScript : MonoBehaviour {
 
     public int teleport(Transform objectWhoMove, Transform targetTransform, GameObject[] otherObjectInformation)
     {
-        Debug.Log("1 " + otherObjectInformation[0].transform.position.x + " " + objectWhoMove.gameObject.name + " " + objectWhoMove.position.x);
+        /*Debug.Log("1 " + otherObjectInformation[0].transform.position.x + " " + objectWhoMove.gameObject.name + " " + objectWhoMove.position.x);
         Debug.Log("1 " + otherObjectInformation[0].transform.position.x + " " + targetTransform.gameObject.name + " " + targetTransform.position.x + " " + targetTransform.position.y);
-       
-        //Debug.Log("3 " + !otherObjectInformation[1].activeSelf + " " + otherObjectInformation[2].activeSelf);
+        Debug.Log("3 " + !otherObjectInformation[1].activeSelf + " " + otherObjectInformation[2].activeSelf);*/
         Transform childrenObject = objectWhoMove.GetChild(0);
         if (Mathf.Abs(otherObjectInformation[0].transform.position.x - objectWhoMove.position.x) > 1.5 || Mathf.Abs(otherObjectInformation[0].transform.position.y - childrenObject.position.y) > 1.5)
             return 2;

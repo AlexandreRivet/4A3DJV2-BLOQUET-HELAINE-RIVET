@@ -43,11 +43,17 @@ public class OnContactObjectScript : MonoBehaviour {
     }
     public bool objectCanStopMe()
     {
-        return _objectContacted.layer == 9;
+        if (_objectContacted != null)
+            return _objectContacted.layer == 9;
+
+        return false;
     }
     public bool objectIsTeleporter()
     {
-        return _objectContacted.layer == 10;
+        if (_objectContacted != null)
+            return _objectContacted.layer == 10;
+
+        return false;
     }
     public void OnCollisionEnter(Collision collision)
     {
@@ -56,13 +62,13 @@ public class OnContactObjectScript : MonoBehaviour {
 
         _isContact = true;
         _objectContacted = collision.gameObject;
-        Debug.Log("Enter" + _objectContacted.name);
+        //Debug.Log("Enter" + _objectContacted.name);
     }
     public void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.layer != 9)
             return;
-        Debug.Log("Exit" + _objectContacted.name);
+        //Debug.Log("Exit" + _objectContacted.name);
         _isContact = false;
         _objectContacted = null;
         
@@ -73,13 +79,13 @@ public class OnContactObjectScript : MonoBehaviour {
             return;
         _isTrigger = true;
         _objectTrigger = collider.gameObject;
-        Debug.Log("Enter" + _objectTrigger.name);
+        //Debug.Log("Enter" + _objectTrigger.name);
     }
     public void OnTriggerExit(Collider collider)
     {
         if (collider.gameObject.layer != 10)
             return;
-        Debug.Log("Exit" + _objectTrigger.name);
+        //Debug.Log("Exit" + _objectTrigger.name);
         _isTrigger = false;
         _objectTrigger = null;
        

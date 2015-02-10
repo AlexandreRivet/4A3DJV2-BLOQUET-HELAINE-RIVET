@@ -40,16 +40,16 @@ public class NetworkManager : MonoBehaviour {
     {
         if (!_isInit)
             return;
-        Debug.Log("New player");
-        Debug.Log("Connexion actuelle : "+ Network.connections.Length);
+        //Debug.Log("New player");
+       // Debug.Log("Connexion actuelle : "+ Network.connections.Length);
         if (Network.connections.Length > _maxConnection - 1)
         {
-            Debug.Log("Trop de connection");
+            //Debug.Log("Trop de connection");
             Network.CloseConnection(player, true);
         }
         else
         {
-            Debug.Log("Nombre de joueur dans PlayerList: " + playersList.Count);
+            //Debug.Log("Nombre de joueur dans PlayerList: " + playersList.Count);
             networkView.RPC("GiveMeYourKeyPlayer", player);
             /*for (int i = 0; i < playersList.Count; i++)
             {
@@ -73,12 +73,12 @@ public class NetworkManager : MonoBehaviour {
     {
         for (int i = 0; i < playersList.Count; i++)
         {
-            Debug.Log("Joueur numéro: " + i + " Key:" + playersList[i].getKey() + "  IP du mec qui se co: " + key);
+            /*Debug.Log("Joueur numéro: " + i + " Key:" + playersList[i].getKey() + "  IP du mec qui se co: " + key);
             Debug.Log("Joueur numéro: " + i + " IP:" + playersList[i].getIP() + "  IP du mec qui se co: " + player.ipAddress);
             Debug.Log("Joueur numéro: " + i + " ExtIP:" + playersList[i].getExtIP() + "  ExtIP du mec qui se co: " + player.externalIP);
             Debug.Log("GUID PlayerList : " + playersList[i].getGuid() + " GUID player" + player.guid);
             Debug.Log("Port PlayerList : " + playersList[i].getPort() + " Port player" + player.port);
-            Debug.Log("ExtPort PlayerList : " + playersList[i].getExtPort() + " ExtPort player" + player.externalPort);
+            Debug.Log("ExtPort PlayerList : " + playersList[i].getExtPort() + " ExtPort player" + player.externalPort);*/
             if (playersList[i].getKey().Equals(key))
             {
                 networkView.RPC("ConnectionToGame", player, Application.loadedLevel);
@@ -109,7 +109,6 @@ public class NetworkManager : MonoBehaviour {
             Enumerable.Repeat(chars, 8)
                       .Select(s => s[random.Next(s.Length)])
                       .ToArray());
-        Debug.Log(result);
         return result;
     }
 
@@ -127,7 +126,7 @@ public class NetworkManager : MonoBehaviour {
             {
                 if (playersList[i].getKey().Equals(key))
                 {
-                    Debug.Log(playersList[i].getId());
+                    //Debug.Log(playersList[i].getId());
                     networkView.RPC("GiveMyCharacter", player, playersList[i].getId());
                 }
             }

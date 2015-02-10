@@ -31,7 +31,6 @@ public class RefreshGameListScript : MonoBehaviour {
     // Resfresh la liste des parties en cours
     public void refreshHostList()
     {
-        Debug.Log(_gameLevel);
         MasterServer.RequestHostList(_gameLevel);
     }
 
@@ -75,7 +74,7 @@ public class RefreshGameListScript : MonoBehaviour {
     //Connexion à une partie
     public void connectAtGame(int i)
     {
-        Debug.Log(_hostData[i].gameType + " " + _gameLevel + "  " + i + " " + _hostData[i].port);
+        //Debug.Log(_hostData[i].gameType + " " + _gameLevel + "  " + i + " " + _hostData[i].port);
         Network.Connect(_hostData[i]);
     }
 
@@ -84,7 +83,7 @@ public class RefreshGameListScript : MonoBehaviour {
         //Received a host list from the master server
         if (mse == MasterServerEvent.HostListReceived)
         {
-            Debug.Log("Receive  " + _gameLevel);
+            //Debug.Log("Receive  " + _gameLevel);
             HostData[] hostData_tmp = MasterServer.PollHostList();
 
             if (hostData_tmp.Length >= 0 && hostData_tmp[0].gameType.Equals(_gameLevel))

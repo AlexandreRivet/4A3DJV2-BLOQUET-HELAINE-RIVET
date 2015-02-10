@@ -74,7 +74,7 @@ public class CreateServerScripts : MonoBehaviour {
     //Fonction de debug appelée quand le serveur est initialisé
     public void OnServerInitialized()
     {
-        Debug.Log("Server initialized");
+        //Debug.Log("Server initialized");
     }
 
     //Fonction de debug appelée quand le Master serveur est créé
@@ -82,7 +82,7 @@ public class CreateServerScripts : MonoBehaviour {
     {
         if (mse == MasterServerEvent.RegistrationSucceeded && !_initServer && !_gameStart)
 	    {
-            Debug.Log("Connection Succeful");
+            //Debug.Log("Connection Succeful");
             //Application.LoadLevel(_levelName);
             _menuLobby.SetActive(true);
             _menuNetwork.SetActive(false);
@@ -95,11 +95,11 @@ public class CreateServerScripts : MonoBehaviour {
     {
         if (_gameStart)
             return;
-        Debug.Log("New player");
+        //Debug.Log("New player");
        
         if (Network.connections.Length > _maxConnection-1)
         {
-            Debug.Log("Trop de connection");
+            //Debug.Log("Trop de connection");
             Network.CloseConnection(player, true);
         }
         else
@@ -118,8 +118,8 @@ public class CreateServerScripts : MonoBehaviour {
     {
         if (_gameStart)
             return;
-        Debug.Log("Disconnected player");
-        Debug.Log("Clean up after player " + player);
+        //Debug.Log("Disconnected player");
+        //Debug.Log("Clean up after player " + player);
         Network.RemoveRPCs(player);
         Network.DestroyPlayerObjects(player);
         playersArray.Remove(player);

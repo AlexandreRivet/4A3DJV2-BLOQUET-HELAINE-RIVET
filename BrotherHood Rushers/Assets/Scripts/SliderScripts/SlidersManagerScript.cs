@@ -98,7 +98,6 @@ public class SlidersManagerScript : MonoBehaviour {
             _marker_Tmp = _markerList[index][i];
             if (Mathf.Abs(position - _marker_Tmp.getPosition()) < 0.5)
             {
-                Debug.Log("kek");
                 _marker_Tmp.addAction(action);
                 return;
             }
@@ -117,8 +116,6 @@ public class SlidersManagerScript : MonoBehaviour {
         rect_transform.anchoredPosition3D = new Vector3(0, 0, 0);
         rect_transform.anchoredPosition = new Vector2(position * (1 / _scaleFactor), -(index * _offsetYSliders));
         //TODO: petit problème de décalage dans les button trouver pourquoi mm si ça doit être lié au slider
-        
-        Debug.Log("kek2");
         _marker_Tmp = new Marker(index, action, but.gameObject, position);
         _markerList[index].Add(_marker_Tmp);
         _markersArray[index].Add(but.gameObject);
@@ -136,7 +133,6 @@ public class SlidersManagerScript : MonoBehaviour {
         List<Marker> markerList_tmp;
         Marker marker_tmp;
         GameObject objectMarker_tmp;
-        Debug.Log(_markerList.Count());
         for(int i = 0; i < 3; i++)
         {
             markerList_tmp = _markerList[i];
@@ -158,7 +154,6 @@ public class SlidersManagerScript : MonoBehaviour {
             if (firstIndex != -1)
                 break;
         }
-        Debug.Log(firstIndex + " " + lastIndex);
         _markerList[firstIndex].RemoveAt(lastIndex); 
     }
     public void deleteAllMarkers()
