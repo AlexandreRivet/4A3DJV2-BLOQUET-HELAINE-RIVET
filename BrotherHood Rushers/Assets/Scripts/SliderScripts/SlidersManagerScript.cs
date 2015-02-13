@@ -22,6 +22,12 @@ public class SlidersManagerScript : MonoBehaviour {
     Transform _sliderParent;
 
     [SerializeField]
+    List<Button> _ButtonMarkerActive = new List<Button>();
+
+    [SerializeField]
+    List<Button> _ButtonMarkerAvailable;
+
+    [SerializeField]
     float _xLevelStart = 0.0f;
 
     [SerializeField]
@@ -44,6 +50,9 @@ public class SlidersManagerScript : MonoBehaviour {
 
     [SerializeField]
     Text[] _actionLabel;
+
+    Marker _markerActive = null;
+    GameObject _markerObjectCurrent = null;
 
     List<Marker>[] _markerList = new List<Marker>[3];
 
@@ -110,10 +119,9 @@ public class SlidersManagerScript : MonoBehaviour {
             }
 
         }
-        
+
         // Création du button
-        Button but = (Button)Instantiate(_markerModel);
-        but.name = "Marker_" + index + "_" + lastIndex[index];
+        Button but = getButtonAvailable();
         but.transform.localScale = new Vector3(_scaleFactor, _scaleFactor, _scaleFactor);
         but.transform.SetParent(_sliderParent);
         // Placement du button
@@ -122,22 +130,22 @@ public class SlidersManagerScript : MonoBehaviour {
         rect_transform.anchoredPosition3D = new Vector3(0, 0, 0);
         rect_transform.anchoredPosition = new Vector2(position * (1 / _scaleFactor), -(index * _offsetYSliders));
         //TODO: petit problème de décalage dans les button trouver pourquoi mm si ça doit être lié au slider
-        _marker_Tmp = new Marker(index, action, but.gameObject, position);
+        _marker_Tmp = new Marker(index, action, but, position);
         _markerList[index].Add(_marker_Tmp);
 
-        OnClickMarker functionCLick = but.gameObject.GetComponent<OnClickMarker>();
+        /*OnClickMarker functionCLick = but.gameObject.GetComponent<OnClickMarker>();
         functionCLick.setSliderManager(this);
-        functionCLick.setMarker(_marker_Tmp);
+        functionCLick.setMarker(_marker_Tmp);*/
         // Mise à jour du prochain ID
         lastIndex[index]++;
     }
-    public void destroyMarker(GameObject marker)
+    public void destroyMarker(Button marker)
     {
         int firstIndex = -1;
         int lastIndex = -1;
         List<Marker> markerList_tmp;
         Marker marker_tmp;
-        GameObject objectMarker_tmp;
+        Button objectMarker_tmp;
         for(int i = 0; i < 3; i++)
         {
             markerList_tmp = _markerList[i];
@@ -152,7 +160,7 @@ public class SlidersManagerScript : MonoBehaviour {
                     List<Action> actionList_tmp = marker_tmp.getActionList();
                     for (int k = 0; k < actionList_tmp.Count; k++)
                         _gameManager.removeAction(i, actionList_tmp[k]);
-                    Destroy(objectMarker_tmp);
+                    removeButtonAvailable(marker);
                     break;
                 }
             }
@@ -163,13 +171,12 @@ public class SlidersManagerScript : MonoBehaviour {
     }
     public void deleteAllMarkers()
     {
-        Debug.Log("Etape 1");
         for (int i = 0; i < _markerList.Length; i++)
         {
 
             for (int j = 0; j < _markerList[i].Count; j++)
             {
-                Destroy(_markerList[i][j].getMarker());
+                removeButtonAvailable(_markerList[i][j].getMarker());
             }
                
         }
@@ -179,8 +186,91 @@ public class SlidersManagerScript : MonoBehaviour {
             _markerList[i] = new List<Marker>();
         }
     }
+    public Marker getMarkerWithObject(Button marker)
+    {
+        List<Marker> markerList_tmp;
+        Marker marker_tmp;
+        Button objectMarker_tmp;
+        for (int i = 0; i < 3; i++)
+        {
+            markerList_tmp = _markerList[i];
+            for (int j = 0; j < markerList_tmp.Count; j++)
+            {
+                marker_tmp = markerList_tmp[j];
+                
+                objectMarker_tmp = marker_tmp.getMarker();
+                if (objectMarker_tmp.Equals(marker))
+                {
+                    return marker_tmp;
+                }
+            }
+        }
+        return null;
+    }
+ 
     public void setActiveMarkerPanel(bool value)
     {
         _panelMarker.SetActive(value);
+    }
+    public void setActiveMarkerAction(int id, bool value)
+    {
+        _actionPanel[id].SetActive(value);
+    }
+    public void setActiveMarkerActionAll(bool value)
+    {
+        for (int i = 0; i < _actionPanel.Length; i++ )
+            _actionPanel[i].SetActive(value);
+    }
+    public void setTextMarkerLabelAction(int id, string text)
+    {
+        _actionLabel[id].text = text;
+    }
+
+    public void setMarkerActiveCurrent(Marker marker)
+    {
+        _markerActive = marker;
+    }
+    public void setMarkerObject(GameObject marker)
+    {
+        _markerObjectCurrent = marker;
+    }
+    public Marker getMarkerActiveCurrent()
+    {
+        return _markerActive;
+    }
+    public GameObject getMarkerObject()
+    {
+        return _markerObjectCurrent;
+    }
+    public Button getButtonAvailable()
+    {
+        Button but = _ButtonMarkerAvailable[0];
+        _ButtonMarkerActive.Add(but);
+        _ButtonMarkerAvailable.RemoveAt(0);
+
+        return but;
+    }
+    public Button removeButtonAvailable(Button but)
+    {
+        _ButtonMarkerAvailable.Add(but);
+        _ButtonMarkerAvailable.Remove(but);
+
+        return but;
+    }
+    public void OnClickMarker(GameObject markerObject)
+    {
+        if (markerObject == null)
+            return;
+        
+        Marker marker = getMarkerWithObject(markerObject.GetComponent<Button>());
+        setMarkerActiveCurrent(marker);
+        List<Action> actionList = marker.getActionList();
+        setActiveMarkerPanel(true);
+        setActiveMarkerActionAll(false);
+        for (int i = 0; i < actionList.Count; i++)
+        {
+            setActiveMarkerAction(i, true);
+            setTextMarkerLabelAction(i, actionList[i].get_typeAction());
+        }
     }
 }

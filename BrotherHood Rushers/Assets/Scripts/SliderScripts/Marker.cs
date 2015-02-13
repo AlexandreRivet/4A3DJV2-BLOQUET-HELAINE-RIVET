@@ -6,10 +6,10 @@ using System.Linq;
 public class Marker {
     int _idPlayer;
     List<Action> _actionList = new List<Action>();
-    GameObject _marker;
+    Button _marker;
     float _positionMarker;
 
-    public Marker(int id, Action action, GameObject marker, float positionMarker)
+    public Marker(int id, Action action, Button marker, float positionMarker)
     {
         _idPlayer = id;
         _actionList.Add(action);
@@ -20,7 +20,7 @@ public class Marker {
     {
         _actionList.Add(action);
     }
-    public void setMarker(GameObject marker)
+    public void setMarker(Button marker)
     {
         _marker = marker;
     }
@@ -32,7 +32,7 @@ public class Marker {
     {
         return _idPlayer;
     }
-    public GameObject getMarker()
+    public Button getMarker()
     {
         return _marker;
     }

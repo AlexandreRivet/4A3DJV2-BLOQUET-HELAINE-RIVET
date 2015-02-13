@@ -36,11 +36,12 @@ public class OnClickMarker : MonoBehaviour {
         if (_marker == null)
             return;
         List<Action> actionList = _marker.getActionList();
-        /*for (int i = 0; i < actionList.Count; i++)
-            _actionPanel[i].SetActive(true);*/
-
         _sliderManager.setActiveMarkerPanel(true);
-
-        _sliderManager.destroyMarker(gameObject);
+        _sliderManager.setActiveMarkerActionAll(false);
+        for (int i = 0; i < actionList.Count; i++)
+        {
+            _sliderManager.setActiveMarkerAction(i,true);
+            _sliderManager.setTextMarkerLabelAction(i,actionList[i].get_typeAction());
+        }
     }
 }
