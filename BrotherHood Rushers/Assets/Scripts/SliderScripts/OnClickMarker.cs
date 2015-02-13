@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
-
+using System.Collections.Generic;
+using System.Linq;
 public class OnClickMarker : MonoBehaviour {
 
     [SerializeField]
     SlidersManagerScript _sliderManager;
+    
 
     Marker _marker = null;
 	// Use this for initialization
@@ -30,6 +33,14 @@ public class OnClickMarker : MonoBehaviour {
     }
     public void OnClick()
     {
+        if (_marker == null)
+            return;
+        List<Action> actionList = _marker.getActionList();
+        /*for (int i = 0; i < actionList.Count; i++)
+            _actionPanel[i].SetActive(true);*/
+
+        _sliderManager.setActiveMarkerPanel(true);
+
         _sliderManager.destroyMarker(gameObject);
     }
 }

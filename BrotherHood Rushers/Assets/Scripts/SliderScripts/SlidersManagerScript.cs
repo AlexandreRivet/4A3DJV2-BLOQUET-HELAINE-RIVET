@@ -36,8 +36,16 @@ public class SlidersManagerScript : MonoBehaviour {
     [SerializeField]
     Button _markerModel;
 
+    [SerializeField]
+    GameObject _panelMarker;
+
+    [SerializeField]
+    GameObject[] _actionPanel;
+
+    [SerializeField]
+    Text[] _actionLabel;
+
     List<Marker>[] _markerList = new List<Marker>[3];
-    List<GameObject>[] _markersArray = new List<GameObject>[3];
 
     float[] lastIndex = new float[] { 0, 0, 0 };
 
@@ -61,10 +69,9 @@ public class SlidersManagerScript : MonoBehaviour {
             // Debug.Log("(" + x + "," + y + ")"); -> Controle de la nouvelle position
         }
 
-        for (int i = 0; i < _markersArray.Length; i++)
+        for (int i = 0; i < _markerList.Length; i++)
         {
             _markerList[i] = new List<Marker>();
-            _markersArray[i] = new List<GameObject>();
         }
 	}
 	
@@ -109,7 +116,6 @@ public class SlidersManagerScript : MonoBehaviour {
         but.name = "Marker_" + index + "_" + lastIndex[index];
         but.transform.localScale = new Vector3(_scaleFactor, _scaleFactor, _scaleFactor);
         but.transform.SetParent(_sliderParent);
-        _markersArray[index].Add(but.gameObject);
         // Placement du button
         RectTransform rect_transform = but.GetComponent<RectTransform>();
         rect_transform.pivot = new Vector2(0.5f, 0);
@@ -118,7 +124,6 @@ public class SlidersManagerScript : MonoBehaviour {
         //TODO: petit problème de décalage dans les button trouver pourquoi mm si ça doit être lié au slider
         _marker_Tmp = new Marker(index, action, but.gameObject, position);
         _markerList[index].Add(_marker_Tmp);
-        _markersArray[index].Add(but.gameObject);
 
         OnClickMarker functionCLick = but.gameObject.GetComponent<OnClickMarker>();
         functionCLick.setSliderManager(this);
@@ -158,19 +163,24 @@ public class SlidersManagerScript : MonoBehaviour {
     }
     public void deleteAllMarkers()
     {
-        for(int i = 0; i < _markersArray.Length; i++)
+        Debug.Log("Etape 1");
+        for (int i = 0; i < _markerList.Length; i++)
         {
-            
-            for (int j = 0; j < _markersArray[i].Count; j++)
+
+            for (int j = 0; j < _markerList[i].Count; j++)
             {
-                Destroy(_markersArray[i][j]);
+                Destroy(_markerList[i][j].getMarker());
             }
                
         }
-        _markersArray = new List<GameObject>[3];
-        for (int i = 0; i < _markersArray.Length; i++)
+        _markerList = new List<Marker>[3];
+        for (int i = 0; i < _markerList.Length; i++)
         {
-            _markersArray[i] = new List<GameObject>();
+            _markerList[i] = new List<Marker>();
         }
+    }
+    public void setActiveMarkerPanel(bool value)
+    {
+        _panelMarker.SetActive(value);
     }
 }

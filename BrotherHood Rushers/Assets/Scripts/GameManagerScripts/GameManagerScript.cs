@@ -204,7 +204,7 @@ public class GameManagerScript : MonoBehaviour {
     public int readPileAction(PileActions pileActions, int id)
     {
         Action currenAction;
-        int state = 0;
+        int state = 2;
         for (int i = 0; i < pileActions.getLength(); i++)
         {
             //Une action est définie par un état 0: action pas commencée 1: action en cour 2: action terminée 3: action interrompue

@@ -25,6 +25,7 @@ public class ResetLevelScript : MonoBehaviour {
     //Reset toutes les infos du level à leur valeur du début de partie
     public void resetLevel()
     {
+        
         //On coupe la simulation
         _gameManager.setFakeSimulation(false);
         //On reset les tableaux d'actions
@@ -36,6 +37,7 @@ public class ResetLevelScript : MonoBehaviour {
             _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation = _startStateObject[i].transform.rotation;
             _characterControler.getObjectLevelById(_idObjectToReset[i]).SetActive(_startStateObject[i].activeSelf);
         }
+        Debug.Log("Etape 1");
         //On supprime les marker sur les sliders
         _sliderManager.deleteAllMarkers();
     }
