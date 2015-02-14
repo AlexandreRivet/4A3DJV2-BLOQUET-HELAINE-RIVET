@@ -52,7 +52,7 @@ public class SlidersManagerScript : MonoBehaviour {
     Text[] _actionLabel;
 
     Marker _markerActive = null;
-    GameObject _markerObjectCurrent = null;
+    Button _markerObjectCurrent = null;
 
     List<Marker>[] _markerList = new List<Marker>[3];
 
@@ -160,7 +160,7 @@ public class SlidersManagerScript : MonoBehaviour {
                     List<Action> actionList_tmp = marker_tmp.getActionList();
                     for (int k = 0; k < actionList_tmp.Count; k++)
                         _gameManager.removeAction(i, actionList_tmp[k]);
-                    removeButtonAvailable(marker);
+                    removeButton(marker);
                     break;
                 }
             }
@@ -176,7 +176,7 @@ public class SlidersManagerScript : MonoBehaviour {
 
             for (int j = 0; j < _markerList[i].Count; j++)
             {
-                removeButtonAvailable(_markerList[i][j].getMarker());
+                removeButton(_markerList[i][j].getMarker());
             }
                
         }
@@ -185,6 +185,22 @@ public class SlidersManagerScript : MonoBehaviour {
         {
             _markerList[i] = new List<Marker>();
         }
+    }
+
+    public void destroyActionMarkerById(int id)
+    {
+        List<Action> actionList_tmp = _markerActive.getActionList();
+        _gameManager.removeAction(_markerActive.getIdPlayer(), actionList_tmp[id]);
+        actionList_tmp.RemoveAt(id);
+        if (actionList_tmp.Count == 0)
+        {
+            _markerList[_markerActive.getIdPlayer()].Remove(_markerActive);
+            setActiveMarkerPanel(false);
+            removeButton(_markerObjectCurrent);
+            return;
+        }
+            
+        refreshDisplayListAction(_markerActive);
     }
     public Marker getMarkerWithObject(Button marker)
     {
@@ -230,7 +246,7 @@ public class SlidersManagerScript : MonoBehaviour {
     {
         _markerActive = marker;
     }
-    public void setMarkerObject(GameObject marker)
+    public void setMarkerObject(Button marker)
     {
         _markerObjectCurrent = marker;
     }
@@ -238,7 +254,7 @@ public class SlidersManagerScript : MonoBehaviour {
     {
         return _markerActive;
     }
-    public GameObject getMarkerObject()
+    public Button getMarkerObject()
     {
         return _markerObjectCurrent;
     }
@@ -247,23 +263,38 @@ public class SlidersManagerScript : MonoBehaviour {
         Button but = _ButtonMarkerAvailable[0];
         _ButtonMarkerActive.Add(but);
         _ButtonMarkerAvailable.RemoveAt(0);
-
+        but.gameObject.SetActive(true);
         return but;
     }
-    public Button removeButtonAvailable(Button but)
+    public void removeButton(Button but)
     {
+        Debug.Log("JYSUIS");
         _ButtonMarkerAvailable.Add(but);
-        _ButtonMarkerAvailable.Remove(but);
+        _ButtonMarkerActive.Remove(but);
+        but.gameObject.SetActive(false);
 
-        return but;
     }
-    public void OnClickMarker(GameObject markerObject)
+    public void OnClickMarker(Button markerObject)
     {
         if (markerObject == null)
             return;
         
-        Marker marker = getMarkerWithObject(markerObject.GetComponent<Button>());
+        Marker marker = getMarkerWithObject(markerObject);
         setMarkerActiveCurrent(marker);
+        setMarkerObject(markerObject);
+        List<Action> actionList = marker.getActionList();
+        setActiveMarkerPanel(true);
+        setActiveMarkerActionAll(false);
+        for (int i = 0; i < actionList.Count; i++)
+        {
+             setActiveMarkerAction(i, true);
+             setTextMarkerLabelAction(i, actionList[i].get_typeAction());
+           
+        }
+    }
+    public void refreshDisplayListAction(Marker marker)
+    {
+        Debug.Log("Tets" + marker.getIdPlayer());
         List<Action> actionList = marker.getActionList();
         setActiveMarkerPanel(true);
         setActiveMarkerActionAll(false);
@@ -271,6 +302,7 @@ public class SlidersManagerScript : MonoBehaviour {
         {
             setActiveMarkerAction(i, true);
             setTextMarkerLabelAction(i, actionList[i].get_typeAction());
+
         }
     }
 }
