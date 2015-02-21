@@ -58,6 +58,8 @@ public class SlidersManagerScript : MonoBehaviour {
 
     float[] lastIndex = new float[] { 0, 0, 0 };
 
+    float _positionMarker = 0;
+    int _indexSliderCurrent = 0;
 	// Use this for initialization
 	void Start () 
     {
@@ -91,20 +93,50 @@ public class SlidersManagerScript : MonoBehaviour {
 	}
 
     public void sendPositionInScene(int index)
-    {  
+    {
+        _gameManager.setActiveActionPanel(true);
+        _gameManager.setTypeObjectChosen("");
+        _gameManager.setActionChosen("");
+        _gameManager.refreshActionLabel("");
         // Calcul de la position dans la scène
         float value = _sliders[index].value;
-        float position = value * (_xLevelEnd - _xLevelStart) + _xLevelStart;
+        _positionMarker = value * (_xLevelEnd - _xLevelStart) + _xLevelStart;
+        _indexSliderCurrent = index;
         //TODO: faire un tableau de liste d'actions
-        Action action_tmp =  new Action(index, new List<float>{position}, -1, new int[]{index}, "Move");
-        _gameManager.addActionPlayers(index, action_tmp);
-        
-        // Création du marker
-        createMarker(index, action_tmp, position);
 
         // Ajouter d'autres traitements ?
     }
+    public void createAction()
+    {
+        Action action_tmp;
+        if (_gameManager.getWaitBefore() > 0)
+        {
+            Debug.Log("Juste wait");
+            action_tmp = new Action(_indexSliderCurrent, "Wait", _gameManager.getTypeObjectChosen(), _gameManager.getMoveBefore(), _gameManager.getWaitBefore(), _positionMarker); // TODO: Généraliser l'action avec l'actionManager
+            _gameManager.addActionPlayers(_indexSliderCurrent, action_tmp);
+            createMarker(_indexSliderCurrent, action_tmp, _positionMarker);
+        }
+        if (_gameManager.getMoveBefore())
+        {
+            Debug.Log("Juste run");
+            action_tmp = new Action(_indexSliderCurrent, "Move", _gameManager.getTypeObjectChosen(), _gameManager.getMoveBefore(), _gameManager.getWaitBefore(), _positionMarker); // TODO: Généraliser l'action avec l'actionManager
+            _gameManager.addActionPlayers(_indexSliderCurrent, action_tmp);
+            createMarker(_indexSliderCurrent, action_tmp, _positionMarker);
+        }
+        if (!_gameManager.getTypeObjectChosen().Equals("") && !_gameManager.getActionChosen().Equals(""))
+        {
+            Debug.Log("Juste :" + _gameManager.getTypeObjectChosen() + " " + _gameManager.getActionChosen());
+            action_tmp = new Action(_indexSliderCurrent, _gameManager.getActionChosen(), _gameManager.getTypeObjectChosen(), _gameManager.getMoveBefore(), _gameManager.getWaitBefore(), _positionMarker); // TODO: Généraliser l'action avec l'actionManager
+            _gameManager.addActionPlayers(_indexSliderCurrent, action_tmp);
 
+            // Création du marker
+            createMarker(_indexSliderCurrent, action_tmp, _positionMarker);
+        }
+        _gameManager.setTypeObjectChosen("");
+        _gameManager.setActionChosen("");
+        _gameManager.refreshActionLabel("");
+        
+    }
     public void createMarker(int index, Action action, float position)
     {
         // Test si un bouton est deja sur la position, si oui, on ajoute juste l'action au bouton présent
@@ -268,7 +300,6 @@ public class SlidersManagerScript : MonoBehaviour {
     }
     public void removeButton(Button but)
     {
-        Debug.Log("JYSUIS");
         _ButtonMarkerAvailable.Add(but);
         _ButtonMarkerActive.Remove(but);
         but.gameObject.SetActive(false);
@@ -294,7 +325,6 @@ public class SlidersManagerScript : MonoBehaviour {
     }
     public void refreshDisplayListAction(Marker marker)
     {
-        Debug.Log("Tets" + marker.getIdPlayer());
         List<Action> actionList = marker.getActionList();
         setActiveMarkerPanel(true);
         setActiveMarkerActionAll(false);

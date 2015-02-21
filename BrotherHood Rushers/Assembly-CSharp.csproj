@@ -51,15 +51,13 @@
      <Compile Include="Assets\Scripts\Format_ResolutionScript\AdjustPositionAlongRatioScript.cs" />
      <Compile Include="Assets\Scripts\Format_ResolutionScript\TestAdjustResolution.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\Action.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\ActionDatas.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScripts\ActionManager.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\GameManagerScript.cs" />
-     <Compile Include="Assets\Scripts\GameManagerScripts\OnClickPlayerScript.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\OnContactObjectScript.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\PileActions.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\ResetLevelScript.cs" />
-     <Compile Include="Assets\Scripts\GameManagerScripts\actionOnClickScript.cs" />
-     <Compile Include="Assets\Scripts\GameManagerScripts\actionWaitOnClickSript.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\MenuInteractionScript.cs" />
-     <Compile Include="Assets\Scripts\MenuScripts\OnClickObjectMenuScript.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\SelectCharacterScript.cs" />
      <Compile Include="Assets\Scripts\NetworkScripts\CreateServerScripts.cs" />
      <Compile Include="Assets\Scripts\NetworkScripts\NetworkManager.cs" />

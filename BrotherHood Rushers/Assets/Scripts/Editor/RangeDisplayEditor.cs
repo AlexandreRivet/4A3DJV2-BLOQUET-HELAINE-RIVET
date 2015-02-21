@@ -10,7 +10,7 @@ using System.IO;
 public class RangeDisplayEditor : EditorWindow
 {
     private GameObject[] _selectedGameObjects = new GameObject[0];
-    private Transform[] _selectedTransforms = new Transform[0];
+    private Transform[] _selectedTransforms = null;
     private bool[] _isDisplay;
     private Vector2 _scrollPosition;
     private float _distance = 0.0f;
@@ -24,7 +24,12 @@ public class RangeDisplayEditor : EditorWindow
     void OnSelectionChange()
     {
         _selectedGameObjects = Selection.gameObjects;
-        _selectedTransforms = Selection.transforms;
+        _selectedTransforms = new Transform[_selectedGameObjects.Length];
+        for (int i = 0; i < _selectedGameObjects.Length; i++)
+        {
+            _selectedTransforms[i] = _selectedGameObjects[i].transform;
+        }
+        
         _isDisplay = new bool[_selectedTransforms.Length];
         for (int i = 0; i < _isDisplay.Length; i++)
         {
@@ -38,18 +43,23 @@ public class RangeDisplayEditor : EditorWindow
         {
             EditorGUILayout.LabelField("Select One or Two Object(s)");
             EditorGUILayout.Space();
-            if (_selectedTransforms.Length == 1)
+
+            if (_selectedTransforms != null && _selectedTransforms.Length == 1)
             {
                 displayTransformSelected();
                 _rangePreview = EditorGUILayout.Slider("Range Preview: ", _rangePreview, 0.0f, 100.0f);
                 SceneView.lastActiveSceneView.Repaint();
 
             }
-            else if (_selectedTransforms.Length == 2)
+            else if (_selectedTransforms != null && _selectedTransforms.Length == 2)
             {
                 displayTransformSelected();
                 _distance = Vector3.Distance(_selectedTransforms[0].position, _selectedTransforms[1].position);
+                float distancex = Math.Abs(_selectedTransforms[0].position.x - _selectedTransforms[1].position.x);
+                float distancey = Math.Abs(_selectedTransforms[0].position.y - _selectedTransforms[1].position.y);
                 EditorGUILayout.LabelField("Distance:", _distance.ToString());
+                EditorGUILayout.LabelField("Distance X:", distancex.ToString());
+                EditorGUILayout.LabelField("Distance Y:", distancey.ToString());
             }
                 
         }
