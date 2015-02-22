@@ -201,7 +201,6 @@ public class GameManagerScript : MonoBehaviour {
         Application.LoadLevel(levelName);
     }
 
-
     //fonctions qui utilisent les fonctions de ActionManager
     public void setActiveActionPanel(bool value)
     {
@@ -270,7 +269,6 @@ public class GameManagerScript : MonoBehaviour {
             switch (currenAction.get_actionState())
             {
                 case 0:
-                    Debug.Log(currenAction.get_typeAction());
                     currenAction.set_actionState(1);
                     return 0;
                 case 1:
@@ -304,6 +302,12 @@ public class GameManagerScript : MonoBehaviour {
                 break;
             case "Grab":
                 action.set_actionState(grab(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, currentActionsDatas.getParentTranform(),currentActionsDatas));
+                break;
+            case "PushBox":
+                action.set_actionState(pushBox(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, currentActionsDatas.getParentTranform(), currentActionsDatas));
+                break;
+            case "PullBox":
+                action.set_actionState(pullBox(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, currentActionsDatas.getParentTranform(), currentActionsDatas));
                 break;
             case "UnGrab":
                 action.set_actionState(unGrab(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, currentActionsDatas.getParentTranform()));
@@ -489,7 +493,22 @@ public class GameManagerScript : MonoBehaviour {
 
         return 1;
     }
+    public int moveObject(Transform objectWhoMove, float _targetMove)
+    {
 
+        float step = 4.0f * Time.deltaTime;
+        Vector3 objectPosition = objectWhoMove.position;
+        Vector3 newPosition = Vector3.MoveTowards(objectWhoMove.position, new Vector3(_targetMove, objectPosition.y, objectPosition.z), step);
+        objectWhoMove.position = newPosition;
+        if (newPosition.x == _targetMove)
+        {
+            objectWhoMove.position = new Vector3(objectWhoMove.position.x, objectWhoMove.position.y, objectWhoMove.position.z);
+            return 2;
+        }
+
+
+        return 1;
+    }
     public int jump(Transform objectWhoMove, Transform targetMove, ActionDatas actionsDatas)
     {
         
@@ -503,13 +522,11 @@ public class GameManagerScript : MonoBehaviour {
         }
         if (Mathf.Abs(targetMove.position.x - childrenObject.position.x) > actionsDatas.getDatasValuesByLabel("RangeJumpX") || Mathf.Abs(targetMove.position.y - (childrenObject.position.y - 1)) > actionsDatas.getDatasValuesByLabel("RangeJumpY"))
         {
-            Debug.Log("AIE");
             childrenObject.rigidbody.useGravity = true;
             return 2;
         }
         if(childrenObject.gameObject.GetComponent<OnContactObjectScript>().isContact())
         {
-            Debug.Log("AIE");
             childrenObject.rigidbody.useGravity = true;
             return 2;
         }
@@ -520,8 +537,6 @@ public class GameManagerScript : MonoBehaviour {
         Vector3 objectPositionFather = objectWhoMove.position;
         if ((Mathf.Abs((childrenObject.position.y - 1) - targetMove.position.y) > 0.01))
         {
-
-            Debug.Log("Y Load");
             newPosition = Vector3.MoveTowards(childrenObject.position, new Vector3(objectPosition.x, targetMove.position.y + 1, objectPosition.z), step);
             childrenObject.position = newPosition;
         }
@@ -571,6 +586,7 @@ public class GameManagerScript : MonoBehaviour {
         if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeGrab") || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeGrab") || (targetTransform.gameObject.tag == "isGrabed" && objectTransform.gameObject.tag == "isGrabing"))
             return 2;
 
+
         objectTransform.gameObject.tag = "isGrabing";
         targetTransform.gameObject.tag = "isGrabed";
         targetTransform.SetParent(objectTransform);
@@ -584,18 +600,42 @@ public class GameManagerScript : MonoBehaviour {
         targetTransform.SetParent(null);
         return 2;
     }
+    public int pushBox(Transform objectTransform, Transform targetTransform, ActionDatas actionsDatas)
+    {
+        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeGrab") || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeGrab") || (targetTransform.gameObject.tag == "isGrabed" && objectTransform.gameObject.tag == "isGrabing"))
+            return 2;
 
+        int characMovState = move(objectTransform, actionsDatas.getDatasValuesByLabel("PositionPush") - (targetTransform.position.x - objectTransform.position.x));
+        int targetMovState = moveObject(targetTransform, actionsDatas.getDatasValuesByLabel("PositionPush"));
+        if (characMovState == 2)
+            return 2;
+
+        return 1;
+    }
+
+    public int pullBox(Transform objectTransform, Transform targetTransform, ActionDatas actionsDatas)
+    {
+        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeGrab") || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeGrab") || (targetTransform.gameObject.tag == "isGrabed" && objectTransform.gameObject.tag == "isGrabing"))
+            return 2;
+
+        int characMovState = move(objectTransform, actionsDatas.getDatasValuesByLabel("PositionPull") - (targetTransform.position.x - objectTransform.position.x));
+        int targetMovState = moveObject(targetTransform, actionsDatas.getDatasValuesByLabel("PositionPull"));
+
+        if (characMovState == 2)
+            return 2;
+
+        return 1;
+    }
     public int teleport(Transform objectWhoMove, Transform targetTransform, GameObject[] otherObjectInformation, ActionDatas actionsDatas)
     {
         /*Debug.Log("1 " + otherObjectInformation[0].transform.position.x + " " + objectWhoMove.gameObject.name + " " + objectWhoMove.position.x);
-        Debug.Log("1 " + otherObjectInformation[0].transform.position.x + " " + targetTransform.gameObject.name + " " + targetTransform.position.x + " " + targetTransform.position.y);
+       Debug.Log("1 " + otherObjectInformation[0].transform.position.x + " " + targetTransform.gameObject.name + " " + targetTransform.position.x + " " + targetTransform.position.y);
         Debug.Log("3 " + !otherObjectInformation[1].activeSelf + " " + otherObjectInformation[2].activeSelf);*/
         Transform childrenObject = objectWhoMove.GetChild(0);
         if (Mathf.Abs(otherObjectInformation[0].transform.position.x - objectWhoMove.position.x) > actionsDatas.getDatasValuesByLabel("RangeFromX") || Mathf.Abs(otherObjectInformation[0].transform.position.y - (childrenObject.position.y - 1)) > actionsDatas.getDatasValuesByLabel("RangeFromY"))
             return 2;
         else if (Mathf.Abs(otherObjectInformation[0].transform.position.x - targetTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeToX") || Mathf.Abs(otherObjectInformation[0].transform.position.y - targetTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeToY"))
         {
-            Debug.Log("AIE");
             return 2;
         }
         if(otherObjectInformation.Length == 3)
@@ -637,7 +677,7 @@ public class GameManagerScript : MonoBehaviour {
     }
     public int lever(Transform objectWhoMove, Transform LeverTransform, Transform targetTransform, Transform DoorTransform, Transform targetTransform2, ActionDatas actionsDatas)
     {
-        Transform childrenObject = objectWhoMove.GetChild(0);
+        //Transform childrenObject = objectWhoMove.GetChild(0);
         if (Math.Abs(Vector3.Distance(LeverTransform.position,objectWhoMove.position)) > actionsDatas.getDatasValuesByLabel("RangeActive"))
             return 2;
         float step = 2.0f * Time.deltaTime;

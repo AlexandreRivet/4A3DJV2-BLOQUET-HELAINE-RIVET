@@ -111,21 +111,18 @@ public class SlidersManagerScript : MonoBehaviour {
         Action action_tmp;
         if (_gameManager.getWaitBefore() > 0)
         {
-            Debug.Log("Juste wait");
             action_tmp = new Action(_indexSliderCurrent, "Wait", _gameManager.getTypeObjectChosen(), _gameManager.getMoveBefore(), _gameManager.getWaitBefore(), _positionMarker); // TODO: Généraliser l'action avec l'actionManager
             _gameManager.addActionPlayers(_indexSliderCurrent, action_tmp);
             createMarker(_indexSliderCurrent, action_tmp, _positionMarker);
         }
         if (_gameManager.getMoveBefore())
         {
-            Debug.Log("Juste run");
             action_tmp = new Action(_indexSliderCurrent, "Move", _gameManager.getTypeObjectChosen(), _gameManager.getMoveBefore(), _gameManager.getWaitBefore(), _positionMarker); // TODO: Généraliser l'action avec l'actionManager
             _gameManager.addActionPlayers(_indexSliderCurrent, action_tmp);
             createMarker(_indexSliderCurrent, action_tmp, _positionMarker);
         }
         if (!_gameManager.getTypeObjectChosen().Equals("") && !_gameManager.getActionChosen().Equals(""))
         {
-            Debug.Log("Juste :" + _gameManager.getTypeObjectChosen() + " " + _gameManager.getActionChosen());
             action_tmp = new Action(_indexSliderCurrent, _gameManager.getActionChosen(), _gameManager.getTypeObjectChosen(), _gameManager.getMoveBefore(), _gameManager.getWaitBefore(), _positionMarker); // TODO: Généraliser l'action avec l'actionManager
             _gameManager.addActionPlayers(_indexSliderCurrent, action_tmp);
 
@@ -319,7 +316,19 @@ public class SlidersManagerScript : MonoBehaviour {
         for (int i = 0; i < actionList.Count; i++)
         {
              setActiveMarkerAction(i, true);
-             setTextMarkerLabelAction(i, actionList[i].get_typeAction());
+             if (actionList[i].get_typeAction().Equals("Wait"))
+             {
+                 setTextMarkerLabelAction(i, actionList[i].getIdAction() + " " + actionList[i].get_typeAction() + ": " + actionList[i].get_secondToWait()+ "s");
+             }
+             else if (actionList[i].get_typeAction().Equals("Move"))
+             {
+                 setTextMarkerLabelAction(i, actionList[i].getIdAction() + " " + actionList[i].get_typeAction());
+             }
+             else
+             {
+                 setTextMarkerLabelAction(i, actionList[i].getIdAction() + " " + actionList[i].get_typeAction() + "-> " + actionList[i].get_typeTarget());
+             }
+             
            
         }
     }
@@ -331,7 +340,18 @@ public class SlidersManagerScript : MonoBehaviour {
         for (int i = 0; i < actionList.Count; i++)
         {
             setActiveMarkerAction(i, true);
-            setTextMarkerLabelAction(i, actionList[i].get_typeAction());
+            if (actionList[i].get_typeAction().Equals("Wait"))
+            {
+                setTextMarkerLabelAction(i, actionList[i].getIdAction() + " " + actionList[i].get_typeAction() + ": " + actionList[i].get_secondToWait() + "s");
+            }
+            else if (actionList[i].get_typeAction().Equals("Move"))
+            {
+                setTextMarkerLabelAction(i, actionList[i].getIdAction() + " " + actionList[i].get_typeAction());
+            }
+            else
+            {
+                setTextMarkerLabelAction(i, actionList[i].getIdAction() + " " + actionList[i].get_typeAction() + "-> " + actionList[i].get_typeTarget());
+            }
 
         }
     }

@@ -10,6 +10,7 @@ using System.Linq;
 [System.Serializable]
 public class Action {
 	//Position de l'action
+    private int _idAction;
     private int _idCharacter;
     private string _typeAction;
     private string _typeTarget;
@@ -34,7 +35,10 @@ public class Action {
 	}
   
 	//getter & setter
-   
+    public int getIdAction()
+    {
+        return _idAction;
+    }
     public int getIdCharacter()
     {
         return _idCharacter;
@@ -68,6 +72,10 @@ public class Action {
         return _actionState;
     }
 
+    public void set_IdAction(int value)
+    {
+        _idAction = value;
+    }
     public void set_IdCharacter(int value)
     {
         _idCharacter = value;

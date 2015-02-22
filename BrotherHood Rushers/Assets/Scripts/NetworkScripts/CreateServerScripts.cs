@@ -26,7 +26,6 @@ public class CreateServerScripts : MonoBehaviour {
     private bool _gameStart = false;
 	// Use this for initialization
 	void Start () {
-        Debug.developerConsoleVisible = true;
 	}
 	
 	// Update is called once per frame

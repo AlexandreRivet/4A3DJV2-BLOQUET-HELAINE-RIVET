@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 public class ActionManager : MonoBehaviour {
 
     private bool _moveBefore = true;
@@ -81,7 +82,12 @@ public class ActionManager : MonoBehaviour {
     }
     public void setWaitBeforeByFIeldText(InputField value)
     {
-        _waitBefore = float.Parse(value.text);
+        NumberStyles style = NumberStyles.AllowDecimalPoint;
+        CultureInfo culture = CultureInfo.CreateSpecificCulture("fr-FR");
+        if (float.TryParse(value.text, style, culture, out _waitBefore))
+            _waitBefore = float.Parse(value.text);
+        else
+            _waitBefore = 0.0f;
     }
     public void setTypeObjectChosen(string value)
     {

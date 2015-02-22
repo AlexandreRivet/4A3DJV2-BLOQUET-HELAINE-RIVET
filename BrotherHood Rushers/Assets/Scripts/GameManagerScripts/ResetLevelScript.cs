@@ -37,7 +37,6 @@ public class ResetLevelScript : MonoBehaviour {
             _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation = _startStateObject[i].transform.rotation;
             _characterControler.getObjectLevelById(_idObjectToReset[i]).SetActive(_startStateObject[i].activeSelf);
         }
-        Debug.Log("Etape 1");
         //On supprime les marker sur les sliders
         _sliderManager.deleteAllMarkers();
     }

@@ -21,18 +21,22 @@ public class PileActions {
 
 	//add
 	public void addActionPlayer(Action action){
-		this._pileActionPlayer.Add(action);
+        action.set_IdAction(_pileActionPlayer.Count());
+        this._pileActionPlayer.Add(action);   
 	}
 
 	//supr
 	public void removeActionPlayerAt(int index){
 		this._pileActionPlayer.RemoveAt(index);
+        refreshIdActions();
 	}
     public void removeActionPlayer(Action action)
     {
         for (int i = 0; i < _pileActionPlayer.Count; i++)
             if (_pileActionPlayer[i].Equals(action))
                 removeActionPlayerAt(i);
+
+        refreshIdActions();
     }
 	//suprall
 	public void removeAllActionPlayer(){
@@ -44,9 +48,17 @@ public class PileActions {
 	//addwhere
 	public void addActionPlayerAt(Action action, int index){
         this._pileActionPlayer.Insert(index, action);
+        refreshIdActions();
 	}
 
-	
+	//refesh Id Action
+    public void refreshIdActions()
+    {
+        for(int i = 0; i < _pileActionPlayer.Count(); i++)
+        {
+            _pileActionPlayer[i].set_IdAction(i);
+        }
+    }
 
 	//Getter & Setter
 	public void set_markerPile(int markerPile){
