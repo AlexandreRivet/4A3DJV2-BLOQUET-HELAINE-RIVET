@@ -11,8 +11,6 @@ public class ResetLevelScript : MonoBehaviour {
     private SlidersManagerScript _sliderManager;
     [SerializeField]
     private GameObject[] _startStateObject;
-	[SerializeField]
-	private GameObject[] _startContinueStateObject;
     [SerializeField]
     private int[] _idObjectToReset;
 	// Use this for initialization
@@ -41,20 +39,6 @@ public class ResetLevelScript : MonoBehaviour {
         //On supprime les marker sur les sliders
         _sliderManager.deleteAllMarkers();
     }
-
-	public void saveNewPosition(){//Save the new position of the object to continue
-
-		_startContinueStateObject = new GameObject[_idObjectToReset.Length];
-
-		for(int i = 0; i < _idObjectToReset.Length; i++)
-        {
-            //On reset les positions
-			_startContinueStateObject[i].transform.position = _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.position;
-			_startContinueStateObject[i].transform.rotation = _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation;
-        }
-
-	}
-
     //Fait la même chose que resetLevel mais sans reset les actions
     public void resetPositions()
     {

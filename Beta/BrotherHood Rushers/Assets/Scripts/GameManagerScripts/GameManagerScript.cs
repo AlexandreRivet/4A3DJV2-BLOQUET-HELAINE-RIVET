@@ -46,9 +46,6 @@ public class GameManagerScript : MonoBehaviour {
     [SerializeField]
     private GameObject _winPanel;
 
-	[SerializeField]
-	private GameObject _votePanel;//Pannel de vote
-
     private PileActions[] _pileActionPlayers = new PileActions[3];
     //private PileActions[] _pileActionPlayer2;
 	//private PileActions _pileActionPlayer3;
@@ -60,7 +57,6 @@ public class GameManagerScript : MonoBehaviour {
     private bool _isReady = false;
     private int _nbOfPlayerReady = 0;
     private int _nbListActionReceive = 0;
-
     void Awake()
     {
         Instance = this;
@@ -105,45 +101,20 @@ public class GameManagerScript : MonoBehaviour {
             if (Vector3.Distance(finalPosition,positionJ1) <= 2 && Vector3.Distance(finalPosition,positionJ2) <= 2 && Vector3.Distance(finalPosition,positionJ3) <= 2)
             {
 
-                StartCoroutine(WaitForVictory(5.0f));
+                StartCoroutine(Wait(5.0f));
                 
-			}else{
-
-				StartCoroutine(WaitForVote(5.0f));
-
-			}
+            }
             startANewLap();
         }
         
 	}
-	private IEnumerator WaitForVictory(float seconds)
+    private IEnumerator Wait(float seconds)
     {
         _winPanel.SetActive(true);
         yield return new WaitForSeconds(seconds);
         Network.Disconnect();
         Application.LoadLevel(_nextLevel);
     }
-
-	private IEnumerator WaitForVote(float seconds)
-	{
-		_votePanel.SetActive(true);
-		yield return new WaitForSeconds(seconds);
-		if(true){
-
-		}else{
-			Network.Disconnect();
-			Application.LoadLevel(_nextLevel);
-		}
-	}
-
-	public void voteRetry(){
-
-	}
-
-	public void voteQuit(){
-
-	}
-
     public void setActivePanelSelectCharac(bool value)
     {
         _panelSelectCharacter.SetActive(value);
@@ -338,6 +309,8 @@ public class GameManagerScript : MonoBehaviour {
                 _startFakeSimulation = true;
                 _panelsToSetActive[0].SetActive(false);
             }
+                
+            
         }
     }
     
@@ -352,8 +325,7 @@ public class GameManagerScript : MonoBehaviour {
         _panelsToSetActive[3].SetActive(false);
         networkView.RPC("isReadyToMe", RPCMode.All);
     }
-    
-	public void startANewLap()
+    public void startANewLap()
     {
         _resetFunctions.resetLevel();
         _isReady = false;
@@ -362,17 +334,6 @@ public class GameManagerScript : MonoBehaviour {
         _panelsToSetActive[2].SetActive(true);
         _panelsToSetActive[3].SetActive(true);
     }
-
-	public void continueLap()
-	{
-		_resetFunctions.resetAction();
-		_resetFunctions.saveNewPosition();
-		_isReady = false;
-		_startFakeSimulation = false;
-		_panelsToSetActive[0].SetActive(false);
-		_panelsToSetActive[2].SetActive(true);
-		_panelsToSetActive[3].SetActive(true);
-	}
 
     [RPC]
     public void isReadyToMe()
