@@ -17,7 +17,6 @@ public class Action {
     private bool _moveBefore;
     private float _secondToWait;
     private float _xPositionTarget;
-    private ActionDatas _actionsData = null;
 	//Type de l'action effectuer
     private int _actionState;
 
@@ -30,7 +29,6 @@ public class Action {
         _moveBefore = moveBefore;
         _secondToWait = secondToWait;
         _xPositionTarget = xPositionTarget;
-        _actionsData = null;
         _actionState = 0;
 	}
   
@@ -62,10 +60,6 @@ public class Action {
     public float get_xPositionTarget()
     {
         return _xPositionTarget;
-    }
-    public ActionDatas get_ActionsDatas()
-    {
-        return _actionsData;
     }
     public int get_actionState()
     {
@@ -99,10 +93,6 @@ public class Action {
     public void set_xPositionTarget(float value)
     {
         _xPositionTarget = value;
-    }
-    public void set_ActionsDatas(ActionDatas value)
-    {
-        _actionsData = value;
     }
     public void set_actionState(int state)
     {

@@ -54,10 +54,11 @@ public class GameManagerScript : MonoBehaviour {
     
     private float[] waitBeforeOtherAction = new float[]{0.0f,0.0f,0.0f};
     private bool[] firstTimeCallAction = new bool[] { true, true, true };
-
+    private ActionDatas[] _currentActionData = new ActionDatas[3];
     private bool _isReady = false;
     private int _nbOfPlayerReady = 0;
     private int _nbListActionReceive = 0;
+  
     void Awake()
     {
         Instance = this;
@@ -289,10 +290,10 @@ public class GameManagerScript : MonoBehaviour {
     public void playAction(Action action, int id)
     {
         string typeAction = action.get_typeAction();
-        if(action.get_ActionsDatas() == null)
-            action.set_ActionsDatas(searchNearestActionsData(getObjectByType(action.get_typeTarget()), action.get_xPositionTarget()));
+        if (_currentActionData[id] == null)
+            _currentActionData[id] = searchNearestActionsData(getObjectByType(action.get_typeTarget()), action.get_xPositionTarget());
 
-        ActionDatas currentActionsDatas = action.get_ActionsDatas();
+        ActionDatas currentActionsDatas = _currentActionData[id];
         // _characterManager.getObjectLevelById(action.get_sceneIdObject(1))
         //Selon le type, une action sera lancée
         
@@ -418,7 +419,6 @@ public class GameManagerScript : MonoBehaviour {
         _panelsToSetActive[0].SetActive(true);
         _panelsToSetActive[1].SetActive(false);
         _panelsToSetActive[2].SetActive(false);
-        _panelsToSetActive[3].SetActive(false);
         networkView.RPC("isReadyToMe", RPCMode.All);
     }
     public void startANewLap()
@@ -427,8 +427,8 @@ public class GameManagerScript : MonoBehaviour {
         _isReady = false;
         _startFakeSimulation = false;
         _panelsToSetActive[0].SetActive(false);
+        _panelsToSetActive[1].SetActive(true);
         _panelsToSetActive[2].SetActive(true);
-        _panelsToSetActive[3].SetActive(true);
     }
 
     [RPC]

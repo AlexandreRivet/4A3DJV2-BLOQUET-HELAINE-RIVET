@@ -203,6 +203,7 @@ public class ActionManager : MonoBehaviour {
             _actionButtonList[i].SetActive(false);
             if (listAction != null && i < listAction.Length)
             {
+                Debug.Log(listAction[i]);
                 _actionTextList[i].text = listAction[i];
                 _actionButtonList[i].SetActive(true);
             }
