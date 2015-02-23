@@ -295,6 +295,7 @@ public class GameManagerScript : MonoBehaviour {
         ActionDatas currentActionsDatas = action.get_ActionsDatas();
         // _characterManager.getObjectLevelById(action.get_sceneIdObject(1))
         //Selon le type, une action sera lancée
+        
         switch(typeAction)
         {
             case "Move":
@@ -602,7 +603,7 @@ public class GameManagerScript : MonoBehaviour {
     }
     public int pushBox(Transform objectTransform, Transform targetTransform, ActionDatas actionsDatas)
     {
-        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeGrab") || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeGrab") || (targetTransform.gameObject.tag == "isGrabed" && objectTransform.gameObject.tag == "isGrabing"))
+        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeGrab") || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeGrab"))
             return 2;
 
         int characMovState = move(objectTransform, actionsDatas.getDatasValuesByLabel("PositionPush") - (targetTransform.position.x - objectTransform.position.x));
@@ -615,9 +616,10 @@ public class GameManagerScript : MonoBehaviour {
 
     public int pullBox(Transform objectTransform, Transform targetTransform, ActionDatas actionsDatas)
     {
-        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeGrab") || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeGrab") || (targetTransform.gameObject.tag == "isGrabed" && objectTransform.gameObject.tag == "isGrabing"))
+        
+        if (Mathf.Abs(targetTransform.position.x - objectTransform.position.x) > actionsDatas.getDatasValuesByLabel("RangeGrab") || Mathf.Abs(targetTransform.position.y - objectTransform.position.y) > actionsDatas.getDatasValuesByLabel("RangeGrab"))
             return 2;
-
+       
         int characMovState = move(objectTransform, actionsDatas.getDatasValuesByLabel("PositionPull") - (targetTransform.position.x - objectTransform.position.x));
         int targetMovState = moveObject(targetTransform, actionsDatas.getDatasValuesByLabel("PositionPull"));
 
