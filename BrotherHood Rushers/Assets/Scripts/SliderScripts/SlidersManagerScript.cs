@@ -123,6 +123,7 @@ public class SlidersManagerScript : MonoBehaviour {
         }
         if (!_gameManager.getTypeObjectChosen().Equals("") && !_gameManager.getActionChosen().Equals(""))
         {
+            Debug.Log(_gameManager.getTypeObjectChosen());
             action_tmp = new Action(_indexSliderCurrent, _gameManager.getActionChosen(), _gameManager.getTypeObjectChosen(), _gameManager.getMoveBefore(), _gameManager.getWaitBefore(), _positionMarker); // TODO: Généraliser l'action avec l'actionManager
             _gameManager.addActionPlayers(_indexSliderCurrent, action_tmp);
 

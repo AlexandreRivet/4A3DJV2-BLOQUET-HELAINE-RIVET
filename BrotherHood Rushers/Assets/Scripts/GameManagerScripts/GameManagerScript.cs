@@ -58,6 +58,7 @@ public class GameManagerScript : MonoBehaviour {
     private bool _isReady = false;
     private int _nbOfPlayerReady = 0;
     private int _nbListActionReceive = 0;
+    private Action _lastAction = null;
   
     void Awake()
     {
@@ -290,10 +291,11 @@ public class GameManagerScript : MonoBehaviour {
     public void playAction(Action action, int id)
     {
         string typeAction = action.get_typeAction();
-        if (_currentActionData[id] == null)
+        if (_lastAction == null || !(_lastAction.Equals(action)))
             _currentActionData[id] = searchNearestActionsData(getObjectByType(action.get_typeTarget()), action.get_xPositionTarget());
 
         ActionDatas currentActionsDatas = _currentActionData[id];
+        //Debug.Log(action.get_typeTarget() + " " + action.get_typeAction() + " " + getObjectByType(action.get_typeTarget()).Count + " " + getObjectByType(action.get_typeTarget())[0].getParentObject().name);
         // _characterManager.getObjectLevelById(action.get_sceneIdObject(1))
         //Selon le type, une action sera lancée
         
@@ -342,7 +344,7 @@ public class GameManagerScript : MonoBehaviour {
             return null;
         float distanceNearest = 0;
         float distanceCurrent = 0;
-       
+
         for(int i = 0; i < listActionsDatas.Count(); i++)
         {
             if (nearestActionDatas == null)
@@ -674,6 +676,7 @@ public class GameManagerScript : MonoBehaviour {
     {
         if (otherInformation.activeSelf)
             return 2;
+        
         target.SetActive(false) ;
         return 2;
     }
