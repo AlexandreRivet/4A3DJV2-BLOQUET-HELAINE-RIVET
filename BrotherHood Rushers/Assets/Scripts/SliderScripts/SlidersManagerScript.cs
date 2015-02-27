@@ -97,6 +97,7 @@ public class SlidersManagerScript : MonoBehaviour {
         _gameManager.setActiveActionPanel(true);
         _gameManager.setTypeObjectChosen("");
         _gameManager.setActionChosen("");
+        _gameManager.setIdPlayerActif(index);
         _gameManager.refreshActionLabel("");
         // Calcul de la position dans la scène
         float value = _sliders[index].value;

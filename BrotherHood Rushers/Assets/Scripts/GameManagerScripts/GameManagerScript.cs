@@ -153,6 +153,7 @@ public class GameManagerScript : MonoBehaviour {
     public void setIdPlayerActif(int id)
     {
         _idPlayerActif = id;
+        _actionManager.setIdCurrent(id);
     }
     public int getIdPlayerActif()
     {

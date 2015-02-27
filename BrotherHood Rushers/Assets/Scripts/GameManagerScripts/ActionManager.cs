@@ -2,17 +2,22 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Globalization;
+
 public class ActionManager : MonoBehaviour {
 
     private bool _moveBefore = true;
     private float _waitBefore = 0.0f;
     private string _typeObjectChosen = "";
     private string _actionChosen = "";
-
+    private int _idCurrent = 0;
+    private Dictionary<string,List<int>> _idsPlayersByAction = new Dictionary<string,List<int>>();
     [SerializeField]
     private GameObject _actionPanel;
+    [SerializeField]
+    private RectTransform _actionPanelList;
     [SerializeField]
     private List<Text> _actionTextList = new List<Text>();
     [SerializeField]
@@ -55,7 +60,13 @@ public class ActionManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+	    _idsPlayersByAction.Add("PushBox", new List<int>{0});
+        _idsPlayersByAction.Add("PullBox", new List<int>{0});
+        _idsPlayersByAction.Add("Jump", new List<int>{0,1,2});
+        _idsPlayersByAction.Add("Teleport", new List<int>{2});
+        _idsPlayersByAction.Add("Pull", new List<int>{1});
+        _idsPlayersByAction.Add("Destroy", new List<int>{1});
+        _idsPlayersByAction.Add("LeverOn", new List<int>{2});
 	}
 	
 	// Update is called once per frame
@@ -134,7 +145,10 @@ public class ActionManager : MonoBehaviour {
     {
 
     }
- 
+    public void setIdCurrent(int value)
+    {
+        _idCurrent = value;
+    }
     //getters
     public bool getMoveBefore()
     {
@@ -197,15 +211,20 @@ public class ActionManager : MonoBehaviour {
     public void refreshActionLabel(string type)
     {
         string[] listAction = getActionByType(type);
-        
+        int inc = 0;
+        _actionPanelList.anchoredPosition = new Vector2(0, 0);
         for(int i = 0; i < _actionTextList.Count(); i++)
         {
             _actionButtonList[i].SetActive(false);
-            if (listAction != null && i < listAction.Length)
+            if (listAction == null || i > listAction.Length - 1)
+                continue;
+            string currentActionName = listAction[i];
+            List<int> currentIdHarray = _idsPlayersByAction[currentActionName];
+            if (currentIdHarray.Contains(_idCurrent))
             {
-                Debug.Log(listAction[i]);
-                _actionTextList[i].text = listAction[i];
-                _actionButtonList[i].SetActive(true);
+                _actionTextList[inc].text = currentActionName;
+                _actionButtonList[inc].SetActive(true);
+                inc++;
             }
                 
         }
