@@ -33,7 +33,8 @@ public class GameManagerScript : MonoBehaviour {
     private ResetLevelScript _resetFunctions;
     [SerializeField]
     private GameObject[] _panelsToSetActive;
-    
+    [SerializeField]
+    private GameObject _buttonResetAll;
     [SerializeField]
     private GameObject _buttonIsReady;
 
@@ -47,7 +48,7 @@ public class GameManagerScript : MonoBehaviour {
     [SerializeField]
     private GameObject _winPanel;
 
-    private PileActions[] _pileActionPlayers = new PileActions[3];
+    private PileActions[] _pileActionPlayers = null;
     //private PileActions[] _pileActionPlayer2;
 	//private PileActions _pileActionPlayer3;
     private bool _startFakeSimulation = false;
@@ -77,10 +78,23 @@ public class GameManagerScript : MonoBehaviour {
             _buttonIsReady.SetActive(false);
             _panelSelectCharacter.SetActive(false);
         }
-           
-        _pileActionPlayers[0] = new PileActions();
-        _pileActionPlayers[1] = new PileActions();
-        _pileActionPlayers[2] = new PileActions();
+        Debug.Log(ReplayManager.Instance + " " + ReplayManager.Instance.getIsReplay());
+        if(ReplayManager.Instance != null && ReplayManager.Instance.getIsReplay())
+        {
+            _pileActionPlayers = ReplayManager.Instance.getPileActions();
+            _buttonResetAll.SetActive(false);
+            _panelsToSetActive[2].SetActive(false);
+            ReplayManager.Instance.setIsReplay(false);
+
+        }
+        if(_pileActionPlayers == null)
+        {
+            _pileActionPlayers = new PileActions[3];
+            _pileActionPlayers[0] = new PileActions();
+            _pileActionPlayers[1] = new PileActions();
+            _pileActionPlayers[2] = new PileActions();
+        }
+        
 	}
 	
 	// Update is called once per frame
@@ -117,6 +131,11 @@ public class GameManagerScript : MonoBehaviour {
         yield return new WaitForSeconds(seconds);
         Network.Disconnect();
         Application.LoadLevel(_nextLevel);
+    }
+
+    public void setListPileAction(PileActions[] list)
+    {
+        _pileActionPlayers = list;
     }
     public void setActivePanelSelectCharac(bool value)
     {
@@ -413,7 +432,33 @@ public class GameManagerScript : MonoBehaviour {
             
         }
     }
-    
+    public void saveReplay()
+    {
+        
+        int nbGameSave = 0;
+        for (int i = 1; i < 3; i++)
+        {
+            nbGameSave += PlayerPrefs.GetInt(i + ":Save");
+        }
+        if (nbGameSave == 10)
+            return;
+        Debug.Log(DateTime.Now);
+        var b = new BinaryFormatter();
+        //Création d'un MemoryStream
+        var m = new MemoryStream();
+        //Sauvegarde des scores
+        b.Serialize(m, _pileActionPlayers);
+
+        var nameSave = PlayerPrefs.GetInt(Application.loadedLevel + ":Save");
+        nameSave++;
+        PlayerPrefs.SetInt(Application.loadedLevel+":Save", nameSave);
+        //Addition à PlayerPrefs
+        Debug.Log(nameSave);
+      
+        PlayerPrefs.SetString(Application.loadedLevel+":Game N°: " + nameSave, Convert.ToBase64String(m.GetBuffer()));
+        PlayerPrefs.Save();
+        
+    }
     public void sendIsReadyAtAll()
     {
         _isReady = true;

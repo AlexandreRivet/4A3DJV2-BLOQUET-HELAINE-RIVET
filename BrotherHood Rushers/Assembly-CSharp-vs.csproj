@@ -58,6 +58,7 @@
      <Compile Include="Assets\Scripts\GameManagerScripts\PileActions.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\ResetLevelScript.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\MenuInteractionScript.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\ReplayManager.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\SelectCharacterScript.cs" />
      <Compile Include="Assets\Scripts\NetworkScripts\CreateServerScripts.cs" />
      <Compile Include="Assets\Scripts\NetworkScripts\NetworkManager.cs" />

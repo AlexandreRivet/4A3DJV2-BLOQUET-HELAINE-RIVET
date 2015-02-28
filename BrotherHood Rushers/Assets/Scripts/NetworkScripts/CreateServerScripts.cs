@@ -170,4 +170,6 @@ public class CreateServerScripts : MonoBehaviour {
                 _lobbyTextArray[i].text = "X";
         }
     }
+
+
 }
