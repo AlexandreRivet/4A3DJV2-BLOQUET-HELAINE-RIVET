@@ -24,7 +24,14 @@ public class PileActions {
         action.set_IdAction(_pileActionPlayer.Count());
         this._pileActionPlayer.Add(action);   
 	}
-
+    public void addActionPlayerList(List<Action> actions)
+    {
+        for (int i = 0; i < actions.Count; i++ )
+        {
+            this._pileActionPlayer.Add(actions[i]);
+        }
+        refreshIdActions();
+    }
 	//supr
 	public void removeActionPlayerAt(int index){
 		this._pileActionPlayer.RemoveAt(index);
@@ -50,7 +57,7 @@ public class PileActions {
         this._pileActionPlayer.Insert(index, action);
         refreshIdActions();
 	}
-
+    
 	//refesh Id Action
     public void refreshIdActions()
     {

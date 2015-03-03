@@ -103,8 +103,7 @@ public class SlidersManagerScript : MonoBehaviour {
         float value = _sliders[index].value;
         _positionMarker = value * (_xLevelEnd - _xLevelStart) + _xLevelStart;
         _indexSliderCurrent = index;
-        //TODO: faire un tableau de liste d'actions
-
+        //TODO: faire un tableau de liste d'action
         // Ajouter d'autres traitements ?
     }
     public void createAction()

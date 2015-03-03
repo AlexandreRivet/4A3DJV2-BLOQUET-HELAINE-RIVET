@@ -51,7 +51,12 @@ public class GameManagerScript : MonoBehaviour {
 
 	[SerializeField]
 	private GameObject _votePanel;//Pannel de vote
+    [SerializeField]
+    private Button _buttonRetry;
+    [SerializeField]
+    private Button _buttonContinue;
 
+    private PileActions[] _pileActionPlayersCombined = null;
     private PileActions[] _pileActionPlayers = null;
     //private PileActions[] _pileActionPlayer2;
 	//private PileActions _pileActionPlayer3;
@@ -67,11 +72,7 @@ public class GameManagerScript : MonoBehaviour {
 	private int _typeStart;
 	private int _nbVoteToContinue = 0;
 
-	[SerializeField]
-	private Button _buttonRetry;
-
-	[SerializeField]
-	private Button _buttonContinue;
+	
   
     void Awake()
     {
@@ -89,10 +90,12 @@ public class GameManagerScript : MonoBehaviour {
             _buttonIsReady.SetActive(false);
             _panelSelectCharacter.SetActive(false);
         }
-        
+        Debug.Log(ReplayManager.Instance);
 		if(ReplayManager.Instance != null && ReplayManager.Instance.getIsReplay())
         {
-			_pileActionPlayers = ReplayManager.Instance.getPileActions();
+            
+            _pileActionPlayers = ReplayManager.Instance.getPileActions();
+            Debug.Log(_pileActionPlayers[0].getLength());
             _buttonResetAll.SetActive(false);
             _panelsToSetActive[2].SetActive(false);
             ReplayManager.Instance.setIsReplay(false);
@@ -104,6 +107,12 @@ public class GameManagerScript : MonoBehaviour {
             _pileActionPlayers[0] = new PileActions();
             _pileActionPlayers[1] = new PileActions();
             _pileActionPlayers[2] = new PileActions();
+
+
+            _pileActionPlayersCombined = new PileActions[3];
+            _pileActionPlayersCombined[0] = new PileActions();
+            _pileActionPlayersCombined[1] = new PileActions();
+            _pileActionPlayersCombined[2] = new PileActions();
         }
         
 	}
@@ -132,7 +141,7 @@ public class GameManagerScript : MonoBehaviour {
                 StartCoroutine(Wait(5.0f));
                 
 			}else{
-				
+                fusionListPileAction();
 				StartCoroutine(WaitForVote(10.0f));
 				
 			}
@@ -152,6 +161,8 @@ public class GameManagerScript : MonoBehaviour {
 	{
 		_votePanel.SetActive(true);
 		yield return new WaitForSeconds(seconds);
+        _buttonRetry.interactable = true;
+        _buttonContinue.interactable = true;
 		_votePanel.SetActive(false);
 
 		startANewLap(_typeStart);
@@ -160,6 +171,13 @@ public class GameManagerScript : MonoBehaviour {
     public void setListPileAction(PileActions[] list)
     {
         _pileActionPlayers = list;
+    }
+    public void fusionListPileAction()
+    {
+        for (int i = 0; i < _pileActionPlayers.Length; i++)
+        {
+            _pileActionPlayersCombined[i].addActionPlayerList(_pileActionPlayers[i].get_pileActionPlayer());
+        }
     }
     public void setActivePanelSelectCharac(bool value)
     {
@@ -473,7 +491,15 @@ public class GameManagerScript : MonoBehaviour {
         //Création d'un MemoryStream
         var m = new MemoryStream();
         //Sauvegarde des scores
-        b.Serialize(m, _pileActionPlayers);
+        for (int i = 0; i < _pileActionPlayersCombined.Count(); i++)
+        {
+            for (int j = 0; j < _pileActionPlayersCombined[i].getLength(); j++)
+            {
+                _pileActionPlayersCombined[i].getAction(j).set_actionState(0);
+            }
+        }
+
+        b.Serialize(m, _pileActionPlayersCombined);
 
         var nameSave = PlayerPrefs.GetInt(Application.loadedLevel + ":Save");
         nameSave++;
@@ -499,9 +525,13 @@ public class GameManagerScript : MonoBehaviour {
     {
 		switch (typeStart) 
 		{
-			case 0: 
+			case 0:
+                _pileActionPlayersCombined = new PileActions[3];
+                _pileActionPlayersCombined[0] = new PileActions();
+                _pileActionPlayersCombined[1] = new PileActions();
+                _pileActionPlayersCombined[2] = new PileActions();
+                _resetFunctions.resetNewPosition();
 				_resetFunctions.resetLevel();
-				_resetFunctions.resetNewPosition();
 				break;
 			case 1: 
 				_resetFunctions.resetAction();
@@ -725,7 +755,7 @@ public class GameManagerScript : MonoBehaviour {
 
         int characMovState = move(objectTransform, actionsDatas.getDatasValuesByLabel("PositionPush") - (targetTransform.position.x - objectTransform.position.x));
         int targetMovState = moveObject(targetTransform, actionsDatas.getDatasValuesByLabel("PositionPush"));
-        if (characMovState == 2)
+        if (characMovState == 2 || targetMovState == 2)
             return 2;
 
         return 1;
@@ -740,7 +770,7 @@ public class GameManagerScript : MonoBehaviour {
         int characMovState = move(objectTransform, actionsDatas.getDatasValuesByLabel("PositionPull") - (targetTransform.position.x - objectTransform.position.x));
         int targetMovState = moveObject(targetTransform, actionsDatas.getDatasValuesByLabel("PositionPull"));
 
-        if (characMovState == 2)
+        if (characMovState == 2 || targetMovState == 2)
             return 2;
 
         return 1;

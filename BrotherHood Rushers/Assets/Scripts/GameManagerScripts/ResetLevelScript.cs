@@ -43,8 +43,8 @@ public class ResetLevelScript : MonoBehaviour {
         for(int i = 0; i < _idObjectToReset.Length; i++)
         {
             //On reset les positions
-            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.position = _startStateObject[i].transform.position;
-            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation = _startStateObject[i].transform.rotation;
+            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.position = _startNewPositionStateObject[i];
+            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation = _startNewRotationStateObject[i];
             _characterControler.getObjectLevelById(_idObjectToReset[i]).SetActive(_startStateObject[i].activeSelf);
         }
         //On supprime les marker sur les sliders
