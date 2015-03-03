@@ -66,7 +66,7 @@ public class CreateServerScripts : MonoBehaviour {
     public void StartServer()
     {
         //Network.InitializeSecurity(); //Permet de protéger son jeu des tricheurs :D
-        Network.InitializeServer(_maxConnection, _port, true);
+        Network.InitializeServer(_maxConnection, _port, !Network.HavePublicAddress());
         MasterServer.RegisterHost(_privateTypeGame, _privateName, "Welcome to Brotherhood Runners");
     }
 
@@ -138,7 +138,6 @@ public class CreateServerScripts : MonoBehaviour {
     [RPC]
     private void ClickToStartRPC(string levelName)
     {
-        _menuLobby.SetActive(false);
         Application.LoadLevel(levelName);
     }
 

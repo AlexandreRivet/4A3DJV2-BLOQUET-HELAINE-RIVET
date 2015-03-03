@@ -13,6 +13,7 @@ public class ReplayManager : MonoBehaviour {
     [SerializeField]
     Text[] _listTextReplay = new Text[0];
 
+    private bool _levelIsLoad = false;
     private string _dataPileAction = "";
     private int _levelId = 0;
     PileActions[] _replayPileActions = null;

@@ -13,19 +13,9 @@ public class ResetLevelScript : MonoBehaviour {
     private GameObject[] _startStateObject;
     [SerializeField]
     private int[] _idObjectToReset;
-
-    private Vector3[] _startNewPositionStateObject;
-    private Quaternion[] _startNewRotationStateObject;
 	// Use this for initialization
 	void Start () {
-        _startNewPositionStateObject = new Vector3[_startStateObject.Length];
-        _startNewRotationStateObject = new Quaternion[_startStateObject.Length];
-        for (int i = 0; i < _startStateObject.Length; i++)
-        {
-            _startNewPositionStateObject[i] = new Vector3();
-            _startNewRotationStateObject[i] = new Quaternion();
-        }
-        resetNewPosition();    
+	
 	}
 	
 	// Update is called once per frame
@@ -57,8 +47,8 @@ public class ResetLevelScript : MonoBehaviour {
         _gameManager.resetPileActions(false);
         for (int i = 0; i < _idObjectToReset.Length; i++)
         {
-            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.position = _startNewPositionStateObject[i];
-            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation = _startNewRotationStateObject[i];
+            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.position = _startStateObject[i].transform.position;
+            _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation = _startStateObject[i].transform.rotation;
             _characterControler.getObjectLevelById(_idObjectToReset[i]).SetActive(_startStateObject[i].activeSelf);
         }
         //_sliderManager.deleteAllMarkers();
@@ -73,24 +63,4 @@ public class ResetLevelScript : MonoBehaviour {
         //On supprime les marker sur les sliders
         _sliderManager.deleteAllMarkers();
     }
-
-	public void saveNewPosition(){//Save the new position of the object to continue
-
-
-        for (int i = 0; i < _startNewPositionStateObject.Length; i++)
-		{
-			//On reset les positions
-            _startNewPositionStateObject[i] = _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.position;
-            _startNewRotationStateObject[i] = _characterControler.getObjectLevelById(_idObjectToReset[i]).transform.rotation;
-		}
-	}
-
-	public void resetNewPosition(){//Save the new position of the object to continue
-        for (int i = 0; i < _startNewPositionStateObject.Length; i++)
-        {
-            //On reset les positions
-            _startNewPositionStateObject[i] = _startStateObject[i].transform.position;
-            _startNewRotationStateObject[i] = _startStateObject[i].transform.rotation;
-        }
-	}
 }
