@@ -86,7 +86,7 @@ public class RefreshGameListScript : MonoBehaviour {
             //Debug.Log("Receive  " + _gameLevel);
             HostData[] hostData_tmp = MasterServer.PollHostList();
 
-            if (hostData_tmp.Length >= 0 && hostData_tmp[0].gameType.Equals(_gameLevel))
+            if (hostData_tmp.Length > 0 && hostData_tmp[0].gameType.Equals(_gameLevel))
             {
                 _hostData = hostData_tmp;
                 addButtonGameList();

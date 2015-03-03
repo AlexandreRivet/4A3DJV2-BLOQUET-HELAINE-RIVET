@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,9 @@ public class GameManagerScript : MonoBehaviour {
     [SerializeField]
     private GameObject _winPanel;
 
+	[SerializeField]
+	private GameObject _votePanel;//Pannel de vote
+
     private PileActions[] _pileActionPlayers = null;
     //private PileActions[] _pileActionPlayer2;
 	//private PileActions _pileActionPlayer3;
@@ -60,6 +64,14 @@ public class GameManagerScript : MonoBehaviour {
     private int _nbOfPlayerReady = 0;
     private int _nbListActionReceive = 0;
     private Action _lastAction = null;
+	private int _typeStart;
+	private int _nbVoteToContinue = 0;
+
+	[SerializeField]
+	private Button _buttonRetry;
+
+	[SerializeField]
+	private Button _buttonContinue;
   
     void Awake()
     {
@@ -67,7 +79,6 @@ public class GameManagerScript : MonoBehaviour {
     }
 	// Use this for initialization
 	void Start () {
-
         if(Network.isClient)
         {
             NetworkManager.Instance.networkView.RPC("TakeMyCharacter", RPCMode.Server, PlayerPrefs.GetString("MyKeyGame"), Network.player);
@@ -78,10 +89,10 @@ public class GameManagerScript : MonoBehaviour {
             _buttonIsReady.SetActive(false);
             _panelSelectCharacter.SetActive(false);
         }
-        Debug.Log(ReplayManager.Instance + " " + ReplayManager.Instance.getIsReplay());
-        if(ReplayManager.Instance != null && ReplayManager.Instance.getIsReplay())
+        
+		if(ReplayManager.Instance != null && ReplayManager.Instance.getIsReplay())
         {
-            _pileActionPlayers = ReplayManager.Instance.getPileActions();
+			_pileActionPlayers = ReplayManager.Instance.getPileActions();
             _buttonResetAll.SetActive(false);
             _panelsToSetActive[2].SetActive(false);
             ReplayManager.Instance.setIsReplay(false);
@@ -89,7 +100,7 @@ public class GameManagerScript : MonoBehaviour {
         }
         if(_pileActionPlayers == null)
         {
-            _pileActionPlayers = new PileActions[3];
+			_pileActionPlayers = new PileActions[3];
             _pileActionPlayers[0] = new PileActions();
             _pileActionPlayers[1] = new PileActions();
             _pileActionPlayers[2] = new PileActions();
@@ -120,8 +131,12 @@ public class GameManagerScript : MonoBehaviour {
 
                 StartCoroutine(Wait(5.0f));
                 
-            }
-            startANewLap();
+			}else{
+				
+				StartCoroutine(WaitForVote(10.0f));
+				
+			}
+            //startANewLap();
         }
         
 	}
@@ -132,6 +147,15 @@ public class GameManagerScript : MonoBehaviour {
         Network.Disconnect();
         Application.LoadLevel(_nextLevel);
     }
+
+	private IEnumerator WaitForVote(float seconds)//On vote
+	{
+		_votePanel.SetActive(true);
+		yield return new WaitForSeconds(seconds);
+		_votePanel.SetActive(false);
+
+		startANewLap(_typeStart);
+	}
 
     public void setListPileAction(PileActions[] list)
     {
@@ -220,6 +244,8 @@ public class GameManagerScript : MonoBehaviour {
     }
     public void leaveApplication(string levelName)
     {
+        Network.Disconnect();
+        MasterServer.UnregisterHost();
         Application.LoadLevel(levelName);
     }
 
@@ -469,9 +495,20 @@ public class GameManagerScript : MonoBehaviour {
         _panelsToSetActive[2].SetActive(false);
         networkView.RPC("isReadyToMe", RPCMode.All);
     }
-    public void startANewLap()
+	public void startANewLap(int typeStart)
     {
-        _resetFunctions.resetLevel();
+		switch (typeStart) 
+		{
+			case 0: 
+				_resetFunctions.resetLevel();
+				_resetFunctions.resetNewPosition();
+				break;
+			case 1: 
+				_resetFunctions.resetAction();
+				_resetFunctions.saveNewPosition();
+				break;
+		}
+        //_resetFunctions.resetLevel();
         _isReady = false;
         _startFakeSimulation = false;
         _panelsToSetActive[0].SetActive(false);
@@ -496,9 +533,41 @@ public class GameManagerScript : MonoBehaviour {
         return _isReady;
     }
 
+	public void sendContinue(int valContinue){
+		networkView.RPC("receiveContinue", RPCMode.Others, valContinue);
+	}
 
+	[RPC]
+	public void receiveContinue(int valContinue)
+	{
+        _typeStart = valContinue;
+	}
 
-    //ACTIONS FUNCTIONS !!//
+	[RPC]
+	public void voteContinueSend()//<-------------
+	{
+		_nbVoteToContinue++;
+		
+		if (_nbVoteToContinue > 1) {
+			sendContinue (0);
+		} else 
+		{
+			sendContinue (1);
+		}
+	}
+
+	public void voteContinue(){
+		voteContinueSend ();
+		_buttonContinue.interactable = false;
+		_buttonRetry.interactable = false;
+	}
+
+	public void voteRetry(){
+		_buttonContinue.interactable = false;
+		_buttonRetry.interactable = false;
+	}
+
+    //--------------------------ACTIONS FUNCTIONS !!--------------------------//
 
     public int move(Transform objectWhoMove, float _targetMove)
     {
