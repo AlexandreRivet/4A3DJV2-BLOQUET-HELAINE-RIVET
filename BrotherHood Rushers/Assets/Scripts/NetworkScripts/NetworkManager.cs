@@ -24,7 +24,7 @@ public class NetworkManager : MonoBehaviour {
     {
         if (!Network.isServer)
             return;
-
+        // crée un objet Player pour chaque joueur en partie et leur attribue une "clé" afin de faciliter l'authentification en cas de reconnexion
         for (int i = 0; i < Network.connections.Length; i++)
         {
             string keyPlayer = createKeyPlayer();
@@ -50,24 +50,7 @@ public class NetworkManager : MonoBehaviour {
         }
         else
         {
-            //Debug.Log("Nombre de joueur dans PlayerList: " + playersList.Count);
             networkView.RPC("GiveMeYourKeyPlayer", player);
-            /*for (int i = 0; i < playersList.Count; i++)
-            {
-
-                Debug.Log("Joueur numéro: "+ i + " IP:" + playersList[i].getIP() + "  IP du mec qui se co: " + player.ipAddress);
-                Debug.Log("Joueur numéro: " + i + " ExtIP:" + playersList[i].getExtIP() + "  ExtIP du mec qui se co: " + player.externalIP);
-                Debug.Log("GUID PlayerList : " + playersList[i].getGuid() + " GUID player" + player.guid);
-                Debug.Log("Port PlayerList : " + playersList[i].getPort() + " Port player" + player.port);
-                Debug.Log("ExtPort PlayerList : " + playersList[i].getExtPort() + " ExtPort player" + player.externalPort);
-                if (playersList[i].getNetworkPlayer().ipAddress == player.ipAddress && playersList[i].getNetworkPlayer().externalIP == player.externalIP)
-               {
-                  
-                   networkView.RPC("ConnectionToGame", player, Application.loadedLevel);
-                   return;
-               }
-            }
-            Network.CloseConnection(player, true);*/
         }
     }
     public void checkReconnexionPlayer(string key, NetworkPlayer player)

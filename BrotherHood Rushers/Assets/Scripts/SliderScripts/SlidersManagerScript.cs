@@ -91,7 +91,7 @@ public class SlidersManagerScript : MonoBehaviour {
     {
 	
 	}
-
+    //Ouvre le panel de création d'action quand on clique sur un slider
     public void sendPositionInScene(int index)
     {
         _gameManager.setActiveActionPanel(true);
@@ -106,6 +106,7 @@ public class SlidersManagerScript : MonoBehaviour {
         //TODO: faire un tableau de liste d'action
         // Ajouter d'autres traitements ?
     }
+    //Création de l'action avec les informations données dans le panel d'action
     public void createAction()
     {
         Action action_tmp;
@@ -135,6 +136,7 @@ public class SlidersManagerScript : MonoBehaviour {
         _gameManager.refreshActionLabel("");
         
     }
+    //Création du bouton en récupérant des boutons disponibles. Cela permet d'éviter des "instantiate"
     public void createMarker(int index, Action action, float position)
     {
         // Test si un bouton est deja sur la position, si oui, on ajoute juste l'action au bouton présent
@@ -303,6 +305,7 @@ public class SlidersManagerScript : MonoBehaviour {
         but.gameObject.SetActive(false);
 
     }
+    //Affichage du contenu d'un marqueur ( sa liste d'actions ) permet de voir quelles sont nos actions et de supprimer celles qu'on veut
     public void OnClickMarker(Button markerObject)
     {
         if (markerObject == null)

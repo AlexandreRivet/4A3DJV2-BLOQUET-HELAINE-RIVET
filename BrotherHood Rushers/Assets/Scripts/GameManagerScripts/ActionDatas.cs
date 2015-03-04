@@ -6,8 +6,13 @@ public class ActionDatas : MonoBehaviour {
     private GameObject _parentObject;
     [SerializeField]
     private Transform _parentTransform;
+
+    //Utiliser si besoin d'info sur des gameObjects pour les action actives sur cet objet
     [SerializeField]
     private GameObject[] _datasObjects;
+
+    //Utiliser si besoin d'info supplémentaire. Ce tableau correspond a des string qui permette de récupérer des valeurs du tableau _datasValues
+    // On s'en sert donner des informations comme la distance minimale entre le joueur et l'objet pour faire l'action
     [SerializeField]
     private string[] _datasLabels;
     [SerializeField]
@@ -21,7 +26,7 @@ public class ActionDatas : MonoBehaviour {
 	void Update () {
 	
 	}
-
+    //Getters
     public GameObject getParentObject()
     {
         return _parentObject;

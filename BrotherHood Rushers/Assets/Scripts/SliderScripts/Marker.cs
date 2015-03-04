@@ -8,7 +8,7 @@ public class Marker {
     List<Action> _actionList = new List<Action>();
     Button _marker;
     float _positionMarker;
-
+    //Classe de création de marker, qui relie un bouton à une liste d'actions
     public Marker(int id, Action action, Button marker, float positionMarker)
     {
         _idPlayer = id;

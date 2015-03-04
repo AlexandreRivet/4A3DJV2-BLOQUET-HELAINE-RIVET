@@ -48,8 +48,6 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\CharacterScripts\CharacterManager.cs" />
      <Compile Include="Assets\Scripts\CharacterScripts\StartActionsScript.cs" />
-     <Compile Include="Assets\Scripts\Format_ResolutionScript\AdjustPositionAlongRatioScript.cs" />
-     <Compile Include="Assets\Scripts\Format_ResolutionScript\TestAdjustResolution.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\Action.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\ActionDatas.cs" />
      <Compile Include="Assets\Scripts\GameManagerScripts\ActionManager.cs" />

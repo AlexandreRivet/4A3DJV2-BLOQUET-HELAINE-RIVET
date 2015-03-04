@@ -60,6 +60,7 @@ public class ActionManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        //On définie quelles actions que chaque joueur peut faire.
 	    _idsPlayersByAction.Add("PushBox", new List<int>{0});
         _idsPlayersByAction.Add("PullBox", new List<int>{0});
         _idsPlayersByAction.Add("Jump", new List<int>{0,1,2});
@@ -186,7 +187,7 @@ public class ActionManager : MonoBehaviour {
         }
         return null;
     }
-
+    //Permet de récuperer la liste des actions effectuables sur un type d'objet en particulier
     public string[] getActionByType(string type)
     {
         switch (type)
@@ -207,7 +208,7 @@ public class ActionManager : MonoBehaviour {
         return null;
     }
 
-    //Display Action Label by Type Object
+    //Affiche la liste des actions selon l'objet selectionné
     public void refreshActionLabel(string type)
     {
         string[] listAction = getActionByType(type);

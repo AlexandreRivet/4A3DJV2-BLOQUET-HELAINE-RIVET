@@ -141,10 +141,12 @@ public class GameManagerScript : MonoBehaviour {
 
             if (Vector3.Distance(finalPosition,positionJ1) <= 2 && Vector3.Distance(finalPosition,positionJ2) <= 2 && Vector3.Distance(finalPosition,positionJ3) <= 2)
             {
+                //Win du niveau, load du prochain level
                 fusionListPileAction();
                 StartCoroutine(Wait(5.0f));
                 
 			}else{
+                //Si la game n'est pas terminée, on demande aux joueurs s'ils veulent recommencer depuis zéro ou non
                 fusionListPileAction();
 				StartCoroutine(WaitForVote(10.0f));
 				
@@ -180,6 +182,7 @@ public class GameManagerScript : MonoBehaviour {
     {
         _pileActionPlayers = list;
     }
+    //Permet de fusionner les listes de piles d'actions au fur à mesure de la partie et pouvoir sauvegarder et voir le replay du level en entier ( avec tous les tours )
     public void fusionListPileAction()
     {
         for (int i = 0; i < _pileActionPlayers.Length; i++)
@@ -413,7 +416,8 @@ public class GameManagerScript : MonoBehaviour {
                 break;
         }
     }
-
+    // Fonction qui cherche l'objet le plus proche dans la liste d'actionData. Permet de lancer une action sur par exemple une box,
+    // et de faire cette action sur celle la plus proche de soit. Utile dans des cas où le joueur pourrait faire apparaitre des objets sur la map
     public ActionDatas searchNearestActionsData(List<ActionDatas> listActionsDatas, float position)
     {
         ActionDatas nearestActionDatas = null;
@@ -489,6 +493,7 @@ public class GameManagerScript : MonoBehaviour {
             
         }
     }
+    //Sauvegarde du replay
     public void saveReplay()
     {
         
@@ -575,7 +580,7 @@ public class GameManagerScript : MonoBehaviour {
     {
         return _isReady;
     }
-
+    //Système de vote pour savoir s'il la partie reprend de zéro ou non
 	public void sendContinue(int valContinue){
 		networkView.RPC("receiveContinue", RPCMode.Others, valContinue);
 	}

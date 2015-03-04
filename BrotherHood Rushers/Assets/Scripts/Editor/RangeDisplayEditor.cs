@@ -6,7 +6,7 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-
+//------------------- OUTIL DE DEBUG DE DISTANCE ------------------------//
 public class RangeDisplayEditor : EditorWindow
 {
     private GameObject[] _selectedGameObjects = new GameObject[0];
@@ -75,24 +75,20 @@ public class RangeDisplayEditor : EditorWindow
     }
     void OnFocus()
     {
-        // Remove delegate listener if it has previously
-        // been assigned.
+        //Permet le focus de la scène View
         SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
 
-        // Add (or re-add) the delegate.
         SceneView.onSceneGUIDelegate += this.OnSceneGUI;
     }
 
     void OnDestroy()
     {
-        // When the window is destroyed, remove the delegate
-        // so that it will no longer do any drawing.
         SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
     }
 
     void OnSceneGUI(SceneView sceneView)
     {
-        // Do your drawing here using Handles.
+        //Dessin du cercle de portée
         drawCircleRange();
     }
     
