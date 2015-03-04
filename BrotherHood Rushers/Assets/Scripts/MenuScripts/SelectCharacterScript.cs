@@ -49,6 +49,7 @@ public class SelectCharacterScript : MonoBehaviour {
     {
         if(Network.isServer)
             networkView.RPC("sendReadyToPlay", RPCMode.Others);
+        _gameManager.setActiveButtonIsReady(true);
         _panelSelectCharacter.SetActive(false);
     }
     

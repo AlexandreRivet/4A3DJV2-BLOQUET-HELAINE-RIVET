@@ -55,7 +55,7 @@ public class GameManagerScript : MonoBehaviour {
     private Button _buttonRetry;
     [SerializeField]
     private Button _buttonContinue;
-
+    
     private PileActions[] _pileActionPlayersCombined = null;
     private PileActions[] _pileActionPlayers = null;
     //private PileActions[] _pileActionPlayer2;
@@ -80,14 +80,17 @@ public class GameManagerScript : MonoBehaviour {
     }
 	// Use this for initialization
 	void Start () {
-        if(Network.isClient)
+        _buttonIsReady.SetActive(false);
+        if (Network.isClient && NetworkManager.Instance.getIsReconnexionPlayer())
         {
+            NetworkManager.Instance.setIsReconnexionPlayer(false);
             NetworkManager.Instance.networkView.RPC("TakeMyCharacter", RPCMode.Server, PlayerPrefs.GetString("MyKeyGame"), Network.player);
         }
            
         if (Network.connections.Length == 0)
         {
-            _buttonIsReady.SetActive(false);
+            Debug.Log("Connection == 0");
+            
             _panelSelectCharacter.SetActive(false);
         }
         Debug.Log(ReplayManager.Instance);
@@ -130,6 +133,7 @@ public class GameManagerScript : MonoBehaviour {
 
         if ((statej1 == 2 || statej1 == 3) && (statej2 == 2 || statej2 == 3) && (statej3 == 2 || statej3 == 3) && _isReady == true)
         {
+            _startFakeSimulation = false;
             Vector3 finalPosition = _FinishZone.position;
             Vector3 positionJ1 = _characterManager.getCharactersPositionByIndex(0).transform.position;
             Vector3 positionJ2 = _characterManager.getCharactersPositionByIndex(1).transform.position;
@@ -137,7 +141,7 @@ public class GameManagerScript : MonoBehaviour {
 
             if (Vector3.Distance(finalPosition,positionJ1) <= 2 && Vector3.Distance(finalPosition,positionJ2) <= 2 && Vector3.Distance(finalPosition,positionJ3) <= 2)
             {
-
+                fusionListPileAction();
                 StartCoroutine(Wait(5.0f));
                 
 			}else{
@@ -153,7 +157,11 @@ public class GameManagerScript : MonoBehaviour {
     {
         _winPanel.SetActive(true);
         yield return new WaitForSeconds(seconds);
-        Network.Disconnect();
+        if (_nextLevel == 0)
+        {
+            Network.Disconnect();
+            MasterServer.UnregisterHost();
+        }
         Application.LoadLevel(_nextLevel);
     }
 
@@ -183,6 +191,11 @@ public class GameManagerScript : MonoBehaviour {
     {
         _panelSelectCharacter.SetActive(value);
     }
+    public void setActiveButtonIsReady(bool value)
+    {
+        _buttonIsReady.SetActive(value);
+    }
+    
     //Fonction pour reset les listes des actions
     public void resetPileActions(bool force)
     {
@@ -393,7 +406,7 @@ public class GameManagerScript : MonoBehaviour {
                 action.set_actionState(destroy(currentActionsDatas.getParentObject(), currentActionsDatas.getDatasObjectById(0)));
                 break;
             case "LeverOn":
-                action.set_actionState(lever(currentActionsDatas.getParentTranform(), currentActionsDatas.getDatasObjectById(0).transform, currentActionsDatas.getDatasObjectById(1).transform, currentActionsDatas.getDatasObjectById(2).transform, currentActionsDatas.getDatasObjectById(3).transform, currentActionsDatas));
+                action.set_actionState(lever(_characterManager.getObjectLevelById(action.getIdCharacter()).transform, currentActionsDatas.getDatasObjectById(0).transform, currentActionsDatas.getDatasObjectById(1).transform, currentActionsDatas.getDatasObjectById(2).transform, currentActionsDatas.getDatasObjectById(3).transform, currentActionsDatas));
                 break;
             case "Wait":
                 action.set_actionState(wait(action.get_secondToWait(), id));
@@ -580,9 +593,12 @@ public class GameManagerScript : MonoBehaviour {
 		
 		if (_nbVoteToContinue > 1) {
 			sendContinue (0);
+            _nbVoteToContinue = 0;
+
 		} else 
 		{
 			sendContinue (1);
+            _nbVoteToContinue = 0;
 		}
 	}
 

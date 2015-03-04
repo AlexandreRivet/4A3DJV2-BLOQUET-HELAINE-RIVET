@@ -11,6 +11,7 @@ public class NetworkManager : MonoBehaviour {
     private int _maxConnection = 3;
     private bool _isInit = false;
     private List<Player> playersList = new List<Player>();
+    private bool _isaReconnexionPlayer = false;
     void Awake()
     {
         Instance = this;
@@ -81,11 +82,19 @@ public class NetworkManager : MonoBehaviour {
             Debug.Log("ExtPort PlayerList : " + playersList[i].getExtPort() + " ExtPort player" + player.externalPort);*/
             if (playersList[i].getKey().Equals(key))
             {
-                networkView.RPC("ConnectionToGame", player, Application.loadedLevel);
+                networkView.RPC("ConnectionToGame", player, Application.loadedLevel, true);
                 return;
             }
         }
         Network.CloseConnection(player, true);
+    }
+    public void setIsReconnexionPlayer(bool value)
+    {
+        _isaReconnexionPlayer = value;
+    }
+    public bool getIsReconnexionPlayer()
+    {
+        return _isaReconnexionPlayer;
     }
     //Fonction de debug appelée quand un nouveau joueur se deconnecte
     private void OnPlayerDisconnected(NetworkPlayer player)
@@ -113,8 +122,9 @@ public class NetworkManager : MonoBehaviour {
     }
 
     [RPC]
-    private void ConnectionToGame(int level)
+    private void ConnectionToGame(int level, bool reconnect)
     {
+        _isaReconnexionPlayer = reconnect;
         Application.LoadLevel(level);
     }
     [RPC]
@@ -135,6 +145,7 @@ public class NetworkManager : MonoBehaviour {
     [RPC]
     public void GiveMyCharacter(int idCHaracter)
     {
+        Debug.Log("GiveMyCharacter" + idCHaracter + " ");
         GameManagerScript.Instance.setIdMyCharacter(idCHaracter);
         if (idCHaracter != -1)
             GameManagerScript.Instance.setActivePanelSelectCharac(false);
